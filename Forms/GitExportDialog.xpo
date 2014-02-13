@@ -177,6 +177,8 @@ FORM #GitExportDialog
       #
       #    exportLayersControl.selection(exportLayers);
       #
+      #    gitOptionsGrp.enabled(exportLayers != GitExportLayers::AllLayers);
+      #
       #    layerControl.selection(layer);
       #    layerControl.enabled(exportLayers == GitExportLayers::SelectedLayer);
       #
@@ -403,9 +405,10 @@ FORM #GitExportDialog
       CONTROL GROUP
         PROPERTIES
           Name                #GitOptionsGrp
+          AutoDeclaration     #Yes
           Width               #Column width
           Height              #Column height
-          ElementPosition     #1610612733
+          ElementPosition     #1610612734
           HierarchyParent     #ElementGrp
           FrameType           #Edged 3D
           Caption             #Git options
@@ -491,6 +494,7 @@ FORM #GitExportDialog
         PROPERTIES
           Name                #CheckForDeletedControl
           AutoDeclaration     #Yes
+          Enabled             #No
           HelpText            #Check for objects that are present in repository, but missing in AOT and delete them from repository.
           ElementPosition     #1342177277
           HierarchyParent     #OptionGrp
@@ -558,6 +562,8 @@ FORM #GitExportDialog
             #    ret = super();
             #
             #    layerControl.enabled(exportLayersControl.selection() == GitExportLayers::SelectedLayer);
+            #
+            #    gitOptionsGrp.enabled(exportLayersControl.selection() != GitExportLayers::AllLayers);
             #
             #    return ret;
             #}
