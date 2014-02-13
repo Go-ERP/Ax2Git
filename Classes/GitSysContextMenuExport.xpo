@@ -1,0 +1,73 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: CLS
+
+; 
+; --------------------------------------------------------------------------------
+  CLSVERSION 1
+  
+  CLASS #GitSysContextMenuExport
+    PROPERTIES
+      Name                #GitSysContextMenuExport
+      Extends             #SysContextMenu
+      RunOn               #Client
+      Origin              #{A2D1A3A7-06EA-464B-94F1-AD1661738960}
+    ENDPROPERTIES
+    
+    METHODS
+      SOURCE #classDeclaration
+        #/*
+        #    For calling export from context menu.
+        #*/
+        #class GitSysContextMenuExport extends SysContextMenu
+        #{
+        #    LastAotSelection    lastAotSelection;
+        #}
+      ENDSOURCE
+      SOURCE #first
+        #TreeNode first()
+        #{
+        #    return lastAotSelection.first();
+        #}
+      ENDSOURCE
+      SOURCE #new
+        #void new()
+        #{
+        #    ;
+        #    lastAotSelection = new LastAotSelection();
+        #    super();
+        #}
+      ENDSOURCE
+      SOURCE #next
+        #TreeNode next()
+        #{
+        #    return lastAotSelection.next();
+        #}
+      ENDSOURCE
+      SOURCE #run
+        #void run()
+        #{
+        #    ;
+        #    GitExport::construct(lastAotSelection.first()).run();
+        #}
+        #
+      ENDSOURCE
+      SOURCE #selectionCount
+        #int selectionCount()
+        #{
+        #    return lastAotSelection.selectionCount();
+        #}
+      ENDSOURCE
+      SOURCE #main
+        #static void main(Args args)
+        #{
+        #    GitSysContextMenuExport  export = new GitSysContextMenuExport();
+        #    ;
+        #    export.run();
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDCLASS
+
+***Element: END

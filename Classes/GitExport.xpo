@@ -1,0 +1,431 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: CLS
+
+; 
+; --------------------------------------------------------------------------------
+  CLSVERSION 1
+  
+  CLASS #GitExport
+    PROPERTIES
+      Name                #GitExport
+      Origin              #{A0D4DFFB-BC7C-4CB8-AECC-8C4147577CBA}
+    ENDPROPERTIES
+    
+    METHODS
+      SOURCE #classDeclaration
+        #/*
+        #    Export parm TreeNode and/or all sub-nodes to XPO files
+        #*/
+        #class GitExport
+        #{
+        #    #AOT
+        #    #TreeNodeSysNodeType
+        #    #AotExport
+        #    #AviFiles
+        #
+        #    TreeNode                rootNode;
+        #    counter                 depth;
+        #    FilePath                rootPath;
+        #    NoYes                   exportProjDef;
+        #    GitExportLayers         exportLayers;
+        #    UtilEntryLevel          exportLayer;
+        #    SysOperationProgress    progress;
+        #    Counter                 aotObjectCnt;
+        #}
+      ENDSOURCE
+      SOURCE #exportAllLayers
+        #private void exportAllLayers()
+        #{
+        #    UtilEntryLevel  exportLayerPrev;
+        #    container       layersUsed = GitExport::getLayersUsed();
+        #
+        #
+        #    exportLayers = GitExportLayers::SelectedLayer;
+        #
+        #    progress = SysOperationProgress::newMultiBar(2, #AviUpdate, "Git export");
+        #
+        #    progress.setTotal(enumCnt(UtilEntryLevel), 1);
+        #
+        #    // Iterate through layers
+        #    for (exportLayer=0; exportLayer<=enumCnt(UtilEntryLevel)-1; exportLayer++)
+        #    {
+        #        progress.setCount(exportLayer, 1);
+        #        progress.setText(strFmt('Processing layer: %1', enum2str(exportLayer)), 1);
+        #
+        #        progress.setTotal(aotObjectCnt, 2);
+        #
+        #        Git::checkout(rootPath, enum2str(exportLayer));
+        #
+        #        //Merge-in changes from the layer below current
+        #        if (exportLayer != 0)
+        #        {
+        #            exportLayerPrev = exportLayer - 1;
+        #
+        #            Git::merge(rootPath, enum2str(exportLayerPrev));
+        #
+        #            if (!Git::isClean(rootPath))
+        #            {
+        #                Git::resolveInteractive(rootPath);
+        #                Git::mergeInteractive(rootPath);
+        #
+        #                if (Box::yesNo("Were the conflicts resolved? \nDo you want to proceed?", DialogButton::Yes) != DialogButton::Yes)
+        #                    break;
+        #            }
+        #        }
+        #
+        #        if (conFind(layersUsed, exportLayer))
+        #        {
+        #            aotObjectCnt = 0;
+        #            this.processNode(rootNode);
+        #        }
+        #
+        #        if (!Git::isClean(rootPath))
+        #        {
+        #            Git::commitInteractive(rootPath, enum2str(exportLayer));
+        #
+        #            if (Box::yesNo("Do you want to proceed to next layer?", DialogButton::Yes) != DialogButton::Yes)
+        #                break;
+        #        }
+        #    }
+        #
+        #    // Finally, merge highest layer branch into 'master'
+        #    Git::checkout(rootPath, 'master');
+        #
+        #    exportLayer = enumCnt(UtilEntryLevel)-1;
+        #    Git::merge(rootPath, enum2str(exportLayer));
+        #}
+      ENDSOURCE
+      SOURCE #exportNode
+        #void exportNode(
+        #    TreeNode    _treeNode,
+        #    int         _exportFlag = #export)
+        #{
+        #    str     subPath;
+        #    str     fullPath;
+        #    int     lastSlashPos;
+        #
+        #    aotObjectCnt++;
+        #
+        #    if (progress)
+        #    {
+        #        progress.setCount(aotObjectCnt, 2);
+        #        progress.setText(_treeNode.treeNodePath(), 2);
+        #    }
+        #
+        #    if ((exportLayers == GitExportLayers::SelectedLayer || exportLayers == GitExportLayers::CurrentLayer) &&
+        #        !_treeNode.getNodeInLayer(exportLayer, false))
+        #    {
+        #        return;
+        #    }
+        #
+        #    subPath = _treeNode.treeNodePath();
+        #    lastSlashPos = strScan(subPath, '\\', strLen(subPath), -strLen(subPath));
+        #    subPath = subStr(subPath, 1, lastSlashPos-1);
+        #
+        #    if (!GitExport::folderCheckCreate(rootPath + subPath))
+        #        throw error("could not create path " + rootPath + subPath);
+        #
+        #    fullPath = strFmt("%1%2\\%3.xpo", rootPath, subPath, _treeNode.treeNodeName());
+        #    if (exportLayers == GitExportLayers::SelectedLayer || exportLayers == GitExportLayers::CurrentLayer)
+        #        info(strFmt("%1 (%2)", fullPath, exportLayer));
+        #    else
+        #        info(fullPath);
+        #
+        #
+        #    if (_treeNode.AOTObjectNode())
+        #    {
+        #        if (exportLayers == GitExportLayers::SelectedLayer || exportLayers == GitExportLayers::CurrentLayer)
+        #            _treeNode.getNodeInLayer(exportLayer, false).treeNodeExport(fullPath, _exportFlag);
+        #        else
+        #            _treeNode.treeNodeExport(fullPath, _exportFlag);
+        #
+        #        this.removeExportComment(fullPath);
+        #    }
+        #
+        #    _treeNode = null;
+        #}
+        #
+      ENDSOURCE
+      SOURCE #new
+        #void new(TreeNode _treeNode)
+        #{
+        #    rootNode = _treeNode;
+        #}
+      ENDSOURCE
+      SOURCE #processNode
+        #void processNode(TreeNode _treeNode)
+        #{
+        #    TreeNodeIterator    treeNodeIterator;
+        #    TreeNode            childNode;
+        #
+        #    depth ++;
+        #
+        #    if (GitExport::nodeIsExportable(_treeNode, exportLayers, exportLayer))
+        #    {
+        #        this.exportNode(_treeNode);
+        #    }
+        #    else // Project, group, etc.
+        #    {
+        #        setPrefix(_treeNode.treeNodeName());
+        #
+        #        // Export project definition:
+        #        if (exportProjDef && GitExport::nodeIsProject(_treeNode))
+        #        {
+        #            this.exportNode(_treeNode, #export + #expProjectOnly);
+        #        }
+        #
+        #        // Traverse the tree recursively:
+        #        treeNodeIterator = _treeNode.AOTiterator();
+        #        childNode        = treeNodeIterator.next();
+        #
+        #        while (childNode)
+        #        {
+        #            this.processNode(childNode);
+        #            childNode = treeNodeIterator.next();
+        #        }
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #removeExportComment
+        #void removeExportComment(str  _fullPath)
+        #/*
+        #    Every XPO file contains these lines (language depends on user settings!):
+        #
+        #; Microsoft Business Solutions-Axapta Class: GitExport unloaded
+        #; --------------------------------------------------------------------------------
+        #
+        #    Must be removed to prevent committing of false modifications.
+        #*/
+        #{
+        #    #define.encoding(FileEncoding::UTF8)
+        #
+        #    TextBuffer  textBuffer;
+        #    int         findPos;
+        #    int         endPos;
+        #    int         len;
+        #    ;
+        #
+        #    new FileIoPermission(_fullPath,'w').assert();
+        #    textBuffer = new TextBuffer();
+        #
+        #    if (! textBuffer.fromFile(_fullPath, #encoding))
+        #        throw error(strFmt("Failed loading file %1", _fullPath));
+        #
+        #    textBuffer.find("\n; ", 0);                     // find first comment line
+        #    findPos = textBuffer.matchPos();
+        #
+        #    textBuffer.find("\n", findPos+1);               // find end of comment line
+        #    endPos = textBuffer.matchPos();
+        #
+        #    textBuffer.delete(findPos+3, endPos-findPos-3); // remove comment, leaving blank line
+        #
+        #    textBuffer.toFile(_fullPath, #encoding);
+        #
+        #    textBuffer.setText('');
+        #    textBuffer = null;
+        #}
+      ENDSOURCE
+      SOURCE #run
+        #void run()
+        #{
+        #    Args            args = new Args();
+        #    Object          formRun;
+        #    int             checkoutBranch;
+        #    int             commit;
+        #
+        #    args.name(formStr(GitExportDialog));
+        #    formRun = classFactory.formRunClass(args);
+        #
+        #    formRun.init();
+        #    formRun.run();
+        #    formRun.wait();
+        #
+        #    if (!formRun.closedOk())
+        #        return;
+        #
+        #    startLengthyOperation();
+        #
+        #    rootPath = formRun.getPath();
+        #
+        #    exportLayers = formRun.getExportLayers();
+        #
+        #    if (exportLayers == GitExportLayers::AllLayers)
+        #    {
+        #        this.exportAllLayers();
+        #    }
+        #    else
+        #    {
+        #        exportProjDef = formRun.getExportProjDef();
+        #
+        #        checkoutBranch = formRun.getCheckoutBranch();
+        #        if (checkoutBranch)
+        #        {
+        #            Git::checkout(rootPath, formRun.getBranch());
+        #        }
+        #
+        #
+        #        exportLayer = formRun.getLayer();
+        #
+        #        if (exportLayers == GitExportLayers::CurrentLayer)
+        #            exportLayer = currentAOLayer();
+        #
+        #        this.processNode(rootNode);
+        #
+        #        commit = formRun.getCommit();
+        #        if (commit)
+        #        {
+        #            if (formRun.getCommitInteractive())
+        #            {
+        #                Git::commitInteractive(rootPath, formRun.getCommitMessage());
+        #            }
+        #            else
+        #            {
+        #                Git::commit(rootPath, formRun.getCommitMessage());
+        #            }
+        #        }
+        #    }
+        #
+        #    endLengthyOperation();
+        #}
+      ENDSOURCE
+      SOURCE #construct
+        #public static GitExport construct(TreeNode  _treeNode)
+        #{
+        #    return new GitExport(_treeNode);
+        #}
+      ENDSOURCE
+      SOURCE #folderCheckCreate
+        #static boolean folderCheckCreate(FileName  path)
+        #/*
+        #    Check if folder exists. If not, try creating whole path folder by folder.
+        #*/
+        #{
+        #    str     segment;
+        #    int     slash1Pos;
+        #    int     slash2Pos;
+        #    ;
+        #
+        #    if (!path)
+        #        return false;
+        #    if (WinAPI::folderExists(path))
+        #        return true;
+        #
+        #    // add trailing backslash if not present
+        #    if (substr(path, strlen(path), 1) != "\\")
+        #        path += "\\";
+        #
+        #    while (segment != path)
+        #    {
+        #        slash2Pos = strScan(path, '\\', slash1Pos+1, strLen(path));
+        #        segment = subStr(path, 1, slash2Pos);
+        #        slash1Pos = slash2Pos;
+        #
+        #        if (!segment)
+        #            return false;
+        #        if (WinAPI::folderExists(segment))
+        #            continue;
+        #        else if (WinAPI::createDirectory(segment) == 0)
+        #            continue;
+        #        else
+        #            return false;
+        #    }
+        #
+        #    return true;
+        #}
+      ENDSOURCE
+      SOURCE #getLayersUsed
+        #// Gets list of layers used by application models
+        #public static container getLayersUsed()
+        #{
+        #    SysModel    sysModel;
+        #    container   ret;
+        #
+        #    while select sysModel
+        #        group by Layer
+        #        where sysModel.State != '?'
+        #    {
+        #        ret += sysModel.Layer;
+        #    }
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #nodeIsExportable
+        #static boolean nodeIsExportable(TreeNode _treeNode, GitExportLayers _exportLayers, UtilEntryLevel _exportLayer)
+        #{
+        #    if (!_treeNode.AOTObjectNode())
+        #        return false;
+        #
+        #    if (GitExport::nodeIsProject(_treeNode))
+        #        return false;
+        #
+        #    return true;
+        #}
+      ENDSOURCE
+      SOURCE #nodeIsProject
+        #static boolean nodeIsProject(TreeNode _treeNode)
+        #{
+        #    return (_treeNode && _treeNode is ProjectNode);
+        #}
+      ENDSOURCE
+      SOURCE #runProgram
+        # static str runProgram(
+        #    FileName    _program,
+        #    str         _arguments,
+        #    boolean     _runAsAdmin         = false,
+        #    boolean     _useShellExecute    = false)
+        #{
+        #    System.Diagnostics.ProcessStartInfo processStartInfo;
+        #    System.Diagnostics.Process          process;
+        #    System.OperatingSystem              operatingSystem;
+        #    System.Version                      operatingSystemVersion;
+        #    System.Exception                    ex;
+        #    int                                 major;
+        #    Boolean                             start;
+        #    System.IO.StreamReader              streamRead;
+        #    str                                 retStr;
+        #    ;
+        #
+        #    try
+        #    {
+        #        new InteropPermission(InteropKind::ClrInterop).assert();
+        #
+        #        processStartInfo    = new System.Diagnostics.ProcessStartInfo(_program, _arguments);
+        #        process             = new System.Diagnostics.Process();
+        #        processStartInfo.set_UseShellExecute(_useShellExecute);
+        #        processStartInfo.set_RedirectStandardOutput(true);
+        #        processStartInfo.set_WindowStyle(System.Diagnostics.ProcessWindowStyle::Minimized);
+        #        processStartInfo.set_CreateNoWindow(true);
+        #        process.set_StartInfo(processStartInfo);
+        #
+        #        start = process.Start();
+        #        process.WaitForExit();
+        #
+        #        streamRead = process.get_StandardOutput();
+        #        retStr = streamRead.ReadToEnd();
+        #
+        #        CodeAccessPermission::revertAssert();
+        #
+        #        return retStr;
+        #    }
+        #    catch(Exception::CLRError)
+        #    {
+        #        // BP Deviation documented
+        #        ex = ClrInterop::getLastException();
+        #
+        #        while (ex != null)
+        #        {
+        #            error(ex.ToString());
+        #
+        #            ex = ex.get_InnerException();
+        #        }
+        #
+        #        throw error(strFmt('Error executing "%1" with arguments "%2"', _program, _arguments));
+        #    }
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDCLASS
+
+***Element: END

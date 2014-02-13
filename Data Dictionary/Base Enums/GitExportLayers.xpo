@@ -1,0 +1,51 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: DBE
+
+; 
+; --------------------------------------------------------------------------------
+  ENUMTYPEVERSION 1
+  
+  ENUMTYPE #GitExportLayers
+    PROPERTIES
+      Name                #GitExportLayers
+      Label               #Export layers
+      UseEnumValue        #Yes
+      Origin              #{57D381CE-6FFE-473E-A123-A138E999C6A2}
+    ENDPROPERTIES
+    
+    TYPEELEMENTS
+      #TopLayer
+      PROPERTIES
+        Name                #TopLayer
+        Label               #Top layer
+        EnumValue           #0
+      ENDPROPERTIES
+      
+      #CurrentLayer
+      PROPERTIES
+        Name                #CurrentLayer
+        Label               #Current layer
+        EnumValue           #1
+      ENDPROPERTIES
+      
+      #SelectedLayer
+      PROPERTIES
+        Name                #SelectedLayer
+        Label               #Selected layer
+        EnumValue           #2
+      ENDPROPERTIES
+      
+      #AllLayers
+      PROPERTIES
+        Name                #AllLayers
+        Label               #Track all layers
+        EnumValue           #3
+      ENDPROPERTIES
+      
+    ENDTYPEELEMENTS
+  ENDENUMTYPE
+  
+
+***Element: END

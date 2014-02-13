@@ -1,0 +1,23 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: FTM
+
+; 
+; --------------------------------------------------------------------------------
+  VERSION 1
+  
+  MENUITEM #GitSysContextMenuExport
+    Type: 3
+    PROPERTIES
+      Name                #GitSysContextMenuExport
+      Label               #Git export
+      ObjectType          #Class
+      Object              #GitSysContextMenuExport
+      Origin              #{6AB921DF-AE99-4DBF-95E0-E928460F219B}
+    ENDPROPERTIES
+    
+  ENDMENUITEM
+  
+
+***Element: END
