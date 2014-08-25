@@ -10,157 +10,325 @@ Formatversion: 1
   CLASS #GitExport
     PROPERTIES
       Name                #GitExport
+      Extends             #RunBase
       Origin              #{A0D4DFFB-BC7C-4CB8-AECC-8C4147577CBA}
     ENDPROPERTIES
     
     METHODS
+      SOURCE #buildNodeMap
+        #protected void buildNodeMap(TreeNode _treeNode)
+        #{
+        #    TreeNodeIterator    treeNodeIterator;
+        #    TreeNode            childNode;
+        #    Set                 layerSet;
+        #
+        #    if (GitExport::nodeIsExportable(_treeNode, exportLayers))
+        #    {
+        #        //nodeMap.insert(_treeNode, _treeNode.AOTLayers()); // This does NOT return all layers
+        #        layerSet = GitExport::treeNodeAOTLayers(_treeNode);
+        #        nodeMap.insert(_treeNode, layerSet);
+        #        layersInUse = Set::union(layersInUse, layerSet);
+        #        progress.setText(_treeNode.treeNodePath(), 2);
+        #    }
+        #    else // Project, group, etc.
+        #    {
+        #        setPrefix(_treeNode.treeNodeName());
+        #
+        #        // TODO: Export project definition:
+        #        if (exportProjDef && GitExport::nodeIsProject(_treeNode))
+        #        {
+        #            layerSet = GitExport::treeNodeAOTLayers(_treeNode);
+        #            nodeMap.insert(_treeNode, layerSet);
+        #            layersInUse = Set::union(layersInUse, layerSet);
+        #        }
+        #
+        #        // Traverse the tree recursively:
+        #        treeNodeIterator = _treeNode.AOTiterator();
+        #        childNode        = treeNodeIterator.next();
+        #
+        #        while (childNode)
+        #        {
+        #            this.buildNodeMap(childNode);
+        #
+        #            childNode.treeNodeRelease();
+        #            childNode = null;
+        #
+        #            childNode = treeNodeIterator.next();
+        #        }
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #canGoBatch
+        #public boolean canGoBatch()
+        #{
+        #    return false;
+        #}
+      ENDSOURCE
       SOURCE #classDeclaration
         #/*
         #    Export parm TreeNode and/or all sub-nodes to XPO files
         #*/
-        #class GitExport
+        #class GitExport extends RunBase
         #{
         #    #AOT
         #    #TreeNodeSysNodeType
         #    #AotExport
         #    #AviFiles
         #
+        #    System.Diagnostics.Stopwatch stopWatch; ////TODO: overall timer, avg. time per node
+        #                                        ///
         #    TreeNode                rootNode;
-        #    counter                 depth;
-        #    FilePath                rootPath;
+        #    FilePath                repoPath;
+        #    NoYes                   synchronize;
         #    NoYes                   exportProjDef;
         #    GitExportLayers         exportLayers;
-        #    UtilEntryLevel          exportLayer;
-        #    SysOperationProgress    progress;
-        #    Counter                 aotObjectCnt;
+        #    UtilEntryLevel          parmLayer;
+        #    NoYes                   checkoutBranch;
+        #    str                     branch;
+        #    NoYes                   commit;
+        #    NoYes                   commitInteractive;
+        #    str                     commitMessage;
+        #
+        #    Set                     layersInUse;
+        #    Map                     nodeMap;
+        #    MapEnumerator           nodeMapEnumerator;
+        #
+        #    Object                  dialogFormRun;
+        #
+        #    int         dummy;
+        #    #DEFINE.CurrentVersion(1)
+        #    #LOCALMACRO.CurrentList
+        #        dummy
+        #    #ENDMACRO
+        #}
+      ENDSOURCE
+      SOURCE #dialog
+        #protected Object dialog()
+        #{
+        #    DialogRunbase   dialog = Dialog::newFormnameRunbase(formstr(GitExportDialog), this);
+        #
+        #    dialog = this.dialogInternal(dialog);
+        #
+        #    return dialog;
+        #}
+      ENDSOURCE
+      SOURCE #dialogPostRun
+        #public void dialogPostRun(DialogRunbase dialog)
+        #{
+        # //   Object  formRun = dialog.formRun();
+        #
+        #    dialogFormRun = dialog.formRun();
+        #/*
+        #    repoPath            = formRun.getPath();
+        #    exportProjDef       = formRun.getExportProjDef();
+        #    checkoutBranch      = formRun.getCheckoutBranch();
+        #    branch              = formRun.getBranch();
+        #    exportLayers        = formRun.getExportLayers();
+        #    parmLayer           = formRun.getLayer();
+        #    commit              = formRun.getCommit();
+        #    commitInteractive   = formRun.getCommitInteractive();
+        #    commitMessage       = formRun.getCommitMessage();
+        #*/
+        #    super(dialog);
         #}
       ENDSOURCE
       SOURCE #exportAllLayers
-        #private void exportAllLayers()
+        #protected void exportAllLayers()
         #{
-        #    UtilEntryLevel  exportLayerPrev;
-        #    container       layersUsed = GitExport::getLayersUsed();
-        #
+        #    UtilEntryLevel  layer;
+        #    UtilEntryLevel  layerPrev;
+        #    int             foregroundHwnd;
         #
         #    exportLayers = GitExportLayers::SelectedLayer;
         #
-        #    progress = SysOperationProgress::newMultiBar(2, #AviUpdate, "Git export");
         #
-        #    progress.setTotal(enumCnt(UtilEntryLevel), 1);
+        #    progress.setTotal(enumCnt(UtilEntryLevel)+1, 1);
         #
         #    // Iterate through layers
-        #    for (exportLayer=0; exportLayer<=enumCnt(UtilEntryLevel)-1; exportLayer++)
+        #    for (layer = 0; layer < enumCnt(UtilEntryLevel); layer++)
         #    {
-        #        progress.setCount(exportLayer, 1);
-        #        progress.setText(strFmt('Processing layer: %1', enum2str(exportLayer)), 1);
+        #//TODO: verify
+        #/*
+        #xSession::removeAOC();
+        #SysTreeNode::refreshAll();
+        #SysFlushDictionary::doFlush();
+        #SysFlushAOD::doFlush();
+        #xSession::updateAOC();
+        #*/
+        #        progress.setCount(layer+1, 1);
+        #        progress.setText(strFmt('Processing layer: %1', enum2str(layer)), 1);
+        #        progress.setCount(0, 2);
+        #        progress.setText('', 2);
         #
-        #        progress.setTotal(aotObjectCnt, 2);
+        #        progress.setTotal(nodeMap.elements(), 2);
         #
-        #        Git::checkout(rootPath, enum2str(exportLayer));
+        #        Git::checkout(repoPath, enum2str(layer));
         #
         #        //Merge-in changes from the layer below current
-        #        if (exportLayer != 0)
+        #        if (layer != 0)
         #        {
-        #            exportLayerPrev = exportLayer - 1;
+        #            layerPrev = layer - 1;
         #
-        #            Git::merge(rootPath, enum2str(exportLayerPrev));
+        #            Git::merge(repoPath, enum2str(layerPrev));
         #
-        #            if (!Git::isClean(rootPath))
+        #            if (!Git::isClean(repoPath))
         #            {
-        #                Git::resolveInteractive(rootPath);
-        #                Git::mergeInteractive(rootPath);
+        #                foregroundHwnd = WinAPI::getForegroundWindow(); // save and then restore active window (progress)
+        #
+        #                Git::resolveInteractive(repoPath);
+        #                Git::mergeInteractive(repoPath);
         #
         #                if (Box::yesNo("Were the conflicts resolved? \nDo you want to proceed?", DialogButton::Yes) != DialogButton::Yes)
         #                    break;
+        #
+        #                if (foregroundHwnd)
+        #                {
+        #                    WinAPI::enableWindow(foregroundHwnd, true);
+        #                    WinAPI::bringWindowToTop(foregroundHwnd);
+        #                }
         #            }
         #        }
         #
-        #        if (conFind(layersUsed, exportLayer))
+        #        if (synchronize || layersInUse.in(layer))
         #        {
-        #            aotObjectCnt = 0;
-        #            this.processNode(rootNode);
+        #            this.exportMap(layer);
         #        }
         #
-        #        if (!Git::isClean(rootPath))
+        #        progress.setCount(0, 2);
+        #        progress.setText('', 2);
+        #
+        #        if (!Git::isClean(repoPath))
         #        {
-        #            Git::commitInteractive(rootPath, enum2str(exportLayer));
+        #            foregroundHwnd = WinAPI::getForegroundWindow(); // save and then restore active window (progress)
+        #
+        #            progress.setText('Commit', 2);
+        #            Git::commitInteractive(repoPath, enum2str(layer));
         #
         #            if (Box::yesNo("Do you want to proceed to next layer?", DialogButton::Yes) != DialogButton::Yes)
-        #                break;
+        #                return; //break;
+        #
+        #            if (foregroundHwnd)
+        #            {
+        #                WinAPI::enableWindow(foregroundHwnd, true);
+        #                WinAPI::bringWindowToTop(foregroundHwnd);
+        #            }
         #        }
         #    }
         #
         #    // Finally, merge highest layer branch into 'master'
-        #    Git::checkout(rootPath, 'master');
+        #    Git::checkout(repoPath, 'master');
         #
-        #    exportLayer = enumCnt(UtilEntryLevel)-1;
-        #    Git::merge(rootPath, enum2str(exportLayer));
+        #    layer = enumCnt(UtilEntryLevel) - 1; // Top layer
+        #    Git::merge(repoPath, enum2str(layer));
         #}
       ENDSOURCE
-      SOURCE #exportNode
-        #void exportNode(
-        #    TreeNode    _treeNode,
-        #    int         _exportFlag = #export)
+      SOURCE #exportMap
+        #protected void exportMap(UtilEntryLevel _layer)
         #{
-        #    str     subPath;
-        #    str     fullPath;
-        #    int     lastSlashPos;
+        #    UtilEntryLevel  layer;
+        #    TreeNode        treeNode;
+        #    TreeNode        treeNodeInLayer;
+        #    Set             layerSet;
+        #    Counter         cnt;
         #
-        #    aotObjectCnt++;
-        #
-        #    if (progress)
+        #    nodeMapEnumerator.reset();
+        #    while (nodeMapEnumerator.moveNext())
         #    {
-        #        progress.setCount(aotObjectCnt, 2);
-        #        progress.setText(_treeNode.treeNodePath(), 2);
-        #    }
+        #        cnt++;
         #
-        #    if ((exportLayers == GitExportLayers::SelectedLayer || exportLayers == GitExportLayers::CurrentLayer) &&
-        #        !_treeNode.getNodeInLayer(exportLayer, false))
-        #    {
-        #        return;
-        #    }
+        #        treeNode = nodeMapEnumerator.currentKey();
+        #        layerSet = nodeMapEnumerator.currentValue();
         #
-        #    subPath = _treeNode.treeNodePath();
-        #    lastSlashPos = strScan(subPath, '\\', strLen(subPath), -strLen(subPath));
-        #    subPath = subStr(subPath, 1, lastSlashPos-1);
+        #        progress.setCount(cnt, 2);
+        #        progress.setText(treeNode.treeNodePath(), 2);
         #
-        #    if (!GitExport::folderCheckCreate(rootPath + subPath))
-        #        throw error("could not create path " + rootPath + subPath);
+        #        if (synchronize)
+        #        {
+        #            // Force export of objects in every layer, despite if it is modified there or not
+        #            // Otherwise change would not be detected in Git in cases when you clear all customizations for node in some layer
         #
-        #    fullPath = strFmt("%1%2\\%3.xpo", rootPath, subPath, _treeNode.treeNodeName());
-        #    if (exportLayers == GitExportLayers::SelectedLayer || exportLayers == GitExportLayers::CurrentLayer)
-        #        info(strFmt("%1 (%2)", fullPath, exportLayer));
-        #    else
-        #        info(fullPath);
-        #
-        #
-        #    if (_treeNode.AOTObjectNode())
-        #    {
-        #        if (exportLayers == GitExportLayers::SelectedLayer || exportLayers == GitExportLayers::CurrentLayer)
-        #            _treeNode.getNodeInLayer(exportLayer, false).treeNodeExport(fullPath, _exportFlag);
+        #            // If node is not modified in the requested _layer,
+        #            // find any modified layer immediately below it
+        #            for (layer = _layer; layer >= -1; layer--) // -1 indicates that nothing was found
+        #            {
+        #                if (layerSet.in(layer))
+        #                    break;
+        #            }
+        #        }
         #        else
-        #            _treeNode.treeNodeExport(fullPath, _exportFlag);
+        #        {
+        #            layer = _layer;
+        #        }
         #
-        #        this.removeExportComment(fullPath);
+        #        if (layerSet.in(layer))
+        #        {
+        #            treeNode.AOTrefresh();
+        #            treeNode.AOTrestore();
+        #            treeNode.AOTsave();
+        #
+        #            treeNodeInLayer = treeNode.getNodeInLayer(layer);
+        #            GitExport::exportNode(treeNodeInLayer, layer, exportLayers, repoPath);
+        #            treeNodeInLayer.treeNodeRelease();
+        #            treeNodeInLayer = null;
+        #        }
+        #
+        #        treeNode.treeNodeRelease();
+        #        treeNode = null;
         #    }
-        #
-        #    _treeNode = null;
         #}
+      ENDSOURCE
+      SOURCE #getFromDialog
+        #public boolean getFromDialog()
+        #{
+        #    boolean ret;
         #
+        #    repoPath            = dialogFormRun.getPath();
+        #    exportProjDef       = dialogFormRun.getExportProjDef();
+        #    checkoutBranch      = dialogFormRun.getCheckoutBranch();
+        #    branch              = dialogFormRun.getBranch();
+        #    exportLayers        = dialogFormRun.getExportLayers();
+        #    parmLayer           = dialogFormRun.getLayer();
+        #    commit              = dialogFormRun.getCommit();
+        #    commitInteractive   = dialogFormRun.getCommitInteractive();
+        #    commitMessage       = dialogFormRun.getCommitMessage();
+        #
+        #    ret = super();
+        #
+        #    return ret;
+        #}
       ENDSOURCE
       SOURCE #new
-        #void new(TreeNode _treeNode)
+        #void new()
         #{
-        #    rootNode = _treeNode;
+        #    super();
+        #
+        #    layersInUse = new Set(Types::Integer);
+        #    nodeMap = new Map(Types::Class, Types::Class); // (treeNode, layersSet)
+        #    stopWatch = new System.Diagnostics.Stopwatch();
         #}
       ENDSOURCE
-      SOURCE #processNode
-        #void processNode(TreeNode _treeNode)
+      SOURCE #pack
+        #public container pack()
         #{
+        #    return [#CurrentVersion, #CurrentList];
+        #}
+      ENDSOURCE
+      SOURCE #parmRootNode
+        #public TreeNode parmRootNode(TreeNode _rootNode = rootNode)
+        #{
+        #    rootNode = _rootNode;
+        #
+        #    return rootNode;
+        #}
+      ENDSOURCE
+      SOURCE #processNode_x
+        #void processNode_x(TreeNode _treeNode)
+        #{
+        #    /*
         #    TreeNodeIterator    treeNodeIterator;
         #    TreeNode            childNode;
         #
-        #    depth ++;
+        #    //depth ++;
         #
         #    if (GitExport::nodeIsExportable(_treeNode, exportLayers, exportLayer))
         #    {
@@ -186,70 +354,34 @@ Formatversion: 1
         #            childNode = treeNodeIterator.next();
         #        }
         #    }
-        #}
-      ENDSOURCE
-      SOURCE #removeExportComment
-        #void removeExportComment(str  _fullPath)
-        #/*
-        #    Every XPO file contains these lines (language depends on user settings!):
-        #
-        #; Microsoft Business Solutions-Axapta Class: GitExport unloaded
-        #; --------------------------------------------------------------------------------
-        #
-        #    Must be removed to prevent committing of false modifications.
-        #*/
-        #{
-        #    #define.encoding(FileEncoding::UTF8)
-        #
-        #    TextBuffer  textBuffer;
-        #    int         findPos;
-        #    int         endPos;
-        #    int         len;
-        #    ;
-        #
-        #    new FileIoPermission(_fullPath,'w').assert();
-        #    textBuffer = new TextBuffer();
-        #
-        #    if (! textBuffer.fromFile(_fullPath, #encoding))
-        #        throw error(strFmt("Failed loading file %1", _fullPath));
-        #
-        #    textBuffer.find("\n; ", 0);                     // find first comment line
-        #    findPos = textBuffer.matchPos();
-        #
-        #    textBuffer.find("\n", findPos+1);               // find end of comment line
-        #    endPos = textBuffer.matchPos();
-        #
-        #    textBuffer.delete(findPos+3, endPos-findPos-3); // remove comment, leaving blank line
-        #
-        #    textBuffer.toFile(_fullPath, #encoding);
-        #
-        #    textBuffer.setText('');
-        #    textBuffer = null;
+        #    */
         #}
       ENDSOURCE
       SOURCE #run
         #void run()
         #{
-        #    Args            args = new Args();
-        #    Object          formRun;
-        #    int             checkoutBranch;
-        #    int             commit;
-        #
-        #    args.name(formStr(GitExportDialog));
-        #    formRun = classFactory.formRunClass(args);
-        #
-        #    formRun.init();
-        #    formRun.run();
-        #    formRun.wait();
-        #
-        #    if (!formRun.closedOk())
-        #        return;
         #
         #    startLengthyOperation();
         #
-        #    rootPath = formRun.getPath();
+        #    this.progressInit(strFmt("Exporting to %1", repoPath), 0, #AviUpdate, 2);
         #
-        #    exportLayers = formRun.getExportLayers();
+        #    progress.setText('Loading...', 1);
+        #
+        #    this.buildNodeMap(rootNode);
+        #    progress.setCount(1, 1);
+        #    if (!nodeMap.elements())
+        #    {
+        #        return;
+        #    }
+        #
+        #    nodeMapEnumerator = nodeMap.getEnumerator();
+        #
+        #    rootNode.treeNodeRelease();
+        #    rootNode = null;
+        #info(strFmt('Nodes: %1', nodeMap.elements()));
+        #
+        #//    repoPath     = formRun.getPath();
+        #//    exportLayers = formRun.getExportLayers();
         #
         #    if (exportLayers == GitExportLayers::AllLayers)
         #    {
@@ -257,32 +389,31 @@ Formatversion: 1
         #    }
         #    else
         #    {
-        #        exportProjDef = formRun.getExportProjDef();
+        #//        exportProjDef = formRun.getExportProjDef();
         #
-        #        checkoutBranch = formRun.getCheckoutBranch();
+        #//        checkoutBranch = formRun.getCheckoutBranch();
         #        if (checkoutBranch)
         #        {
-        #            Git::checkout(rootPath, formRun.getBranch());
+        #            Git::checkout(repoPath, branch);
         #        }
         #
-        #
-        #        exportLayer = formRun.getLayer();
+        #//        exportLayer = formRun.getLayer();
         #
         #        if (exportLayers == GitExportLayers::CurrentLayer)
-        #            exportLayer = currentAOLayer();
+        #            parmLayer = currentAOLayer();
         #
-        #        this.processNode(rootNode);
+        #       this.exportMap(parmLayer);
         #
-        #        commit = formRun.getCommit();
+        #//        commit = formRun.getCommit();
         #        if (commit)
         #        {
-        #            if (formRun.getCommitInteractive())
+        #            if (commitInteractive)
         #            {
-        #                Git::commitInteractive(rootPath, formRun.getCommitMessage());
+        #                Git::commitInteractive(repoPath, commitMessage);
         #            }
         #            else
         #            {
-        #                Git::commit(rootPath, formRun.getCommitMessage());
+        #                Git::commit(repoPath, commitMessage);
         #            }
         #        }
         #    }
@@ -290,11 +421,86 @@ Formatversion: 1
         #    endLengthyOperation();
         #}
       ENDSOURCE
-      SOURCE #construct
-        #public static GitExport construct(TreeNode  _treeNode)
+      SOURCE #unpack
+        #public boolean unpack(container packedClass)
         #{
-        #    return new GitExport(_treeNode);
+        #    Version version = RunBase::getVersion(packedClass);
+        #;
+        #    switch (version)
+        #    {
+        #        case #CurrentVersion:
+        #            [version,#CurrentList] = packedClass;
+        #            break;
+        #        default:
+        #            return false;
+        #    }
+        #
+        #    return true;
         #}
+      ENDSOURCE
+      SOURCE #construct
+        #public static GitExport construct(str _menuItemName)
+        #{
+        #    switch (_menuItemName)
+        #    {
+        #        case menuitemActionStr(GitSysContextMenuExport) :
+        #            return new GitExport();
+        #
+        #        case menuitemActionStr(GitSysContextMenuExportQuery) :
+        #            return new GitExport_Query();
+        #
+        #        default :
+        #            throw(error(strFmt("@SYS19306", funcName())));
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #exportNode
+        #static void exportNode(
+        #    TreeNode        _treeNode,
+        #    UtilEntryLevel  _layer,
+        #    GitExportLayers _exportLayers,
+        #    FilePath         _repoPath,
+        #    int             _exportFlag = #export)
+        #{
+        #    str     subPath;
+        #    str     fullPath;
+        #    int     lastSlashPos;
+        #//_treeNode.AOTsave();//TODO
+        #    if ((_exportLayers == GitExportLayers::SelectedLayer || _exportLayers == GitExportLayers::CurrentLayer) &&
+        #        !_treeNode.getNodeInLayer(_layer, false))
+        #    {
+        #        return;
+        #    }
+        #
+        #    subPath = _treeNode.treeNodePath();
+        #    lastSlashPos = strScan(subPath, '\\', strLen(subPath), -strLen(subPath));
+        #    subPath = subStr(subPath, 1, lastSlashPos-1);
+        #
+        #    if (!GitExport::folderCheckCreate(_repoPath + subPath))
+        #        throw error("could not create path " + _repoPath + subPath);
+        #
+        #    fullPath = strFmt("%1%2\\%3.xpo", _repoPath, subPath, _treeNode.treeNodeName());
+        #//    if (exportLayers == GitExportLayers::SelectedLayer || exportLayers == GitExportLayers::CurrentLayer)
+        #//        info(strFmt("%1 (%2)", fullPath, exportLayer));
+        #//    else
+        #//        info(fullPath);
+        #
+        #
+        #    if (_treeNode.AOTObjectNode())
+        #    {
+        #        //_treeNode.AOTrefresh();
+        #
+        #        if (_exportLayers == GitExportLayers::SelectedLayer || _exportLayers == GitExportLayers::CurrentLayer)
+        #            _treeNode.getNodeInLayer(_layer, false).treeNodeExport(fullPath, _exportFlag);
+        #        else
+        #            _treeNode.treeNodeExport(fullPath, _exportFlag);
+        #
+        #        GitExport::removeExportComment(fullPath);
+        #    }
+        #
+        #    //_treeNode.treeNodeRelease();
+        #}
+        #
       ENDSOURCE
       SOURCE #folderCheckCreate
         #static boolean folderCheckCreate(FileName  path)
@@ -335,24 +541,8 @@ Formatversion: 1
         #    return true;
         #}
       ENDSOURCE
-      SOURCE #getLayersUsed
-        #// Gets list of layers used by application models
-        #public static container getLayersUsed()
-        #{
-        #    SysModel    sysModel;
-        #    container   ret;
-        #
-        #    while select sysModel
-        #        group by Layer
-        #        where sysModel.State != '?'
-        #    {
-        #        ret += sysModel.Layer;
-        #    }
-        #    return ret;
-        #}
-      ENDSOURCE
       SOURCE #nodeIsExportable
-        #static boolean nodeIsExportable(TreeNode _treeNode, GitExportLayers _exportLayers, UtilEntryLevel _exportLayer)
+        #static boolean nodeIsExportable(TreeNode _treeNode, GitExportLayers _exportLayers)
         #{
         #    if (!_treeNode.AOTObjectNode())
         #        return false;
@@ -367,6 +557,45 @@ Formatversion: 1
         #static boolean nodeIsProject(TreeNode _treeNode)
         #{
         #    return (_treeNode && _treeNode is ProjectNode);
+        #}
+      ENDSOURCE
+      SOURCE #removeExportComment
+        #static void removeExportComment(str  _fullPath)
+        #/*
+        #    Every XPO file contains these lines (language depends on user settings!):
+        #
+        #; Microsoft Business Solutions-Axapta Class: GitExport unloaded
+        #; --------------------------------------------------------------------------------
+        #
+        #    Must be removed to prevent committing of false modifications.
+        #*/
+        #{
+        #    #define.encoding(FileEncoding::UTF8)
+        #
+        #    TextBuffer  textBuffer;
+        #    int         findPos;
+        #    int         endPos;
+        #    int         len;
+        #    ;
+        #
+        #    new FileIoPermission(_fullPath,'w').assert();
+        #    textBuffer = new TextBuffer();
+        #
+        #    if (! textBuffer.fromFile(_fullPath, #encoding))
+        #        throw error(strFmt("Failed loading file %1", _fullPath));
+        #
+        #    textBuffer.find("\n; ", 0);                     // find first comment line
+        #    findPos = textBuffer.matchPos();
+        #
+        #    textBuffer.find("\n", findPos+1);               // find end of comment line
+        #    endPos = textBuffer.matchPos();
+        #
+        #    textBuffer.delete(findPos+3, endPos-findPos-3); // remove comment, leaving blank line
+        #
+        #    textBuffer.toFile(_fullPath, #encoding);
+        #
+        #    textBuffer.setText('');
+        #    textBuffer = null;
         #}
       ENDSOURCE
       SOURCE #runProgram
@@ -424,6 +653,79 @@ Formatversion: 1
         #        throw error(strFmt('Error executing "%1" with arguments "%2"', _program, _arguments));
         #    }
         #}
+      ENDSOURCE
+      SOURCE #treeNodeAOTLayers
+        #static Set treeNodeAOTLayers(TreeNode _treeNode)
+        #{
+        #    SysModelLayer       sysModelLayer;
+        #    SysModelElement     sysModelElement_Root;
+        #    SysModelElement     sysModelElement;
+        #    SysModelElementData sysModelElementData;
+        #    SysModelElementType sysModelElementType;
+        #
+        #    TreeNodePath        treeNodePathFull;
+        #    TreeNodePath        treeNodePath;
+        #    TreeNodeName        treeNodeName;
+        #    int                 lastSlashPos;
+        #
+        #    Set                 ret = new Set(Types::Integer);
+        #
+        #    treeNodePathFull = _treeNode.treeNodePath();
+        #    lastSlashPos = strScan(treeNodePathFull, @'\', strLen(treeNodePathFull), -strLen(treeNodePathFull));
+        #    treeNodePath = subStr(treeNodePathFull, 1, lastSlashPos-1);
+        #    treeNodeName = subStr(treeNodePathFull, lastSlashPos+1, strLen(treeNodePathFull));
+        #
+        #    // Maps and Views do not have separate types in SysModelElementType - they are stored as Tables. ?..
+        #    if (treeNodePath == @'\Data dictionary\Views' || treeNodePath == @'\Data dictionary\Maps')
+        #    {
+        #        treeNodePath = @'\Data dictionary\Tables';
+        #    }
+        #
+        #    select firstOnly1 sysModelElement_Root
+        #        where sysModelElement_Root.Name == treeNodeName
+        #           && sysModelElement_Root.RootModelElement == sysModelElement_Root.RecId
+        #           && !sysModelElement_Root.ParentId
+        #    join sysModelElementType
+        #        where sysModelElementType.RecId == sysModelElement_Root.ElementType
+        #           && sysModelElementType.TreeNodeName == treeNodePath;
+        #
+        #    while select sysModelElement
+        #        where (!sysModelElement.RootModelElement && sysModelElement.RecId            == sysModelElement_Root.RecId) // the root element itself
+        #           || ( sysModelElement.RootModelElement && sysModelElement.RootModelElement == sysModelElement_Root.RecId) // or any sub-element
+        #    join sysModelElementData
+        #        where sysModelElementData.ModelElement == sysModelElement.RecId
+        #    join sysModelLayer
+        #        group by Layer
+        #        where sysModelLayer.RecId == sysModelElementData.Layer
+        #    {
+        #        ret.add(sysModelLayer.Layer);
+        #    }
+        #
+        #    if (!ret.elements())
+        #    {
+        #        warning(treeNodePathFull + ' - no layers found!');
+        #    }
+        #
+        #    return ret;
+        #}
+        #/* also works, but waaay too slow..
+        #
+        #    TreeNode        treeNodeInLayer;
+        #    UtilEntryLevel  layer;
+        #    Set             ret = new Set(Types::Integer);
+        #
+        #    for (layer=UtilEntryLevel::sys; layer<=UtilEntryLevel::usp; layer++)
+        #    {
+        #        treeNodeInLayer = _treeNode.getNodeInLayer(layer);
+        #        if (treeNodeInLayer)
+        #        {
+        #            ret.add(layer);
+        #            treeNodeInLayer.treeNodeRelease();
+        #            treeNodeInLayer = null;
+        #        }
+        #    }
+        #*/
+        #
       ENDSOURCE
     ENDMETHODS
   ENDCLASS

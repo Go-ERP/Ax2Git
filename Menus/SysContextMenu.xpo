@@ -166,6 +166,14 @@ Formatversion: 1
         ENDPROPERTIES
         
       ENDMENUITEM
+      MENUITEM
+        PROPERTIES
+          Name                #Apply changes
+          MenuItemType        #Action
+          MenuItemName        #SysSecSecurityApply
+        ENDPROPERTIES
+        
+      ENDMENUITEM
     ENDMENU
     SEPARATOR
     MENUITEM
@@ -624,49 +632,25 @@ Formatversion: 1
       ENDPROPERTIES
       
     ENDMENUITEM
-    MENUITEM
+    MENU #Git
       PROPERTIES
-        Name                #Git export
-        MenuItemType        #Action
-        MenuItemName        #GitSysContextMenuExport
-      ENDPROPERTIES
-      
-    ENDMENUITEM
-    MENU #SVN
-      PROPERTIES
-        Name                #SVN
-        Label               #SVN
+        Name                #Git
+        Label               #Git
       ENDPROPERTIES
       
       MENUITEM
         PROPERTIES
-          Name                #Export
+          Name                #Export AOT selection
           MenuItemType        #Action
-          MenuItemName        #SvnSysContextMenuExport
+          MenuItemName        #GitSysContextMenuExport
         ENDPROPERTIES
         
       ENDMENUITEM
       MENUITEM
         PROPERTIES
-          Name                #Import
+          Name                #Export by query
           MenuItemType        #Action
-          MenuItemName        #SvnSysContextMenuImport
-        ENDPROPERTIES
-        
-      ENDMENUITEM
-      MENUITEM
-        PROPERTIES
-          Name                #Parameters
-          MenuItemType        #Action
-          MenuItemName        #SvnParameters
-        ENDPROPERTIES
-        
-      ENDMENUITEM
-      MENUITEM
-        PROPERTIES
-          Name                #Locate XPO file
-          MenuItemType        #Action
-          MenuItemName        #SvnSysContextMenuLocateFile
+          MenuItemName        #GitSysContextMenuExportQuery
         ENDPROPERTIES
         
       ENDMENUITEM

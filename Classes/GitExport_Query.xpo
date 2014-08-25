@@ -1,0 +1,458 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: CLS
+
+; 
+; --------------------------------------------------------------------------------
+  CLSVERSION 1
+  
+  CLASS #GitExport_Query
+    PROPERTIES
+      Name                #GitExport_Query
+      Extends             #GitExport
+      Origin              #{E56F96EE-0828-49E5-AB04-B147E65664FF}
+    ENDPROPERTIES
+    
+    METHODS
+      SOURCE #buildNodeMap
+        #protected void buildNodeMap(TreeNode _treeNode)
+        #{
+        #    SysModelElement         sysModelElement;
+        #    //SysModelElementData     sysModelElementData;
+        #    TreeNode                treeNode;
+        #    Set                     elementIdSet = new Set(Types::Int64);
+        #    Set                     layerSet;
+        #
+        #stopWatch.Reset();
+        #stopWatch.Start();
+        #    while (queryRun.next())
+        #    {
+        #        if (queryRun.changed(tableNum(SysModelElement)))
+        #        {
+        #            sysModelElement = queryRun.get(tableNum(SysModelElement), 1) as SysModelElement;
+        #            if (sysModelElement.RootModelElement != sysModelElement.RecId || sysModelElement.ParentId)
+        #                continue;
+        #
+        #        //}
+        #        //if (queryRun.changed(tableNum(SysModelElement)))
+        #        //{
+        #            //sysModelElementData = queryRun.get(tableNum(SysModelElementData)) as SysModelElementData;
+        #        //}
+        #        //if (queryRun.changed(tableNum(SysModelLayer)))
+        #        //{
+        #            //sysModelLayer = queryRun.get(tableNum(SysModelLayer)) as SysModelLayer;
+        #
+        #        //info(strFmt('%1 %2 %3',
+        #        //    (select firstOnly Name from SysModelElementType where SysModelElementType.RecId == sysModelElement.ElementType).Name,
+        #        //    sysModelElement.Name,
+        #        //    sysModelLayer.Layer));
+        #
+        #            //nodeList.addEnd(TreeNode::findNode(SysTreeNode::modelElement2RootElementPath(sysModelElement)));
+        #
+        #            treeNode = TreeNode::findNode(SysTreeNode::modelElement2RootElementPath(sysModelElement));
+        #            if (treeNode)
+        #            {
+        #                //nodeList.addEnd(treeNode);
+        #                layerSet = GitExport::treeNodeAOTLayers(treeNode);
+        #                nodeMap.insert(treeNode, layerSet);
+        #                layersInUse = Set::union(layersInUse, layerSet);
+        #                progress.setText(treeNode.treeNodePath(), 2);
+        #                treeNode.treeNodeRelease();
+        #                treeNode = null;
+        #            }
+        #            else
+        #            {
+        #                breakpoint;
+        #            }
+        #
+        #        }
+        #    }
+        #
+        #    progress.setText('', 2);
+        #    progress.setCount(0, 2);
+        #
+        #    nodeMapEnumerator = nodeMap.getEnumerator();
+        #
+        #//stopWatch.Stop();
+        #//info(strFmt('Query run Elapsed time: %1', CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds())));
+        #
+        #}
+      ENDSOURCE
+      SOURCE #buildQuery_x
+        #private void buildQuery_x()
+        #{
+        #    /*
+        #    Query                   query = new Query();
+        #    QueryBuildDataSource    qbdsSysModelElement_Root;
+        #    QueryBuildDataSource    qbdsSysModelElementType;
+        #    QueryBuildDataSource    qbdsSysModelElement;
+        #    QueryBuildDataSource    qbdsSysModelElementData;
+        #
+        #    QueryBuildRange         qbrSysModelElementParentModelElement;
+        #    QueryBuildRange         qbrSysModelElement;
+        #    QueryBuildDataSource    qbdsSysModelLayer;
+        #
+        #    // 1. Model element - root entry
+        #    qbdsSysModelElement_Root = query.addDataSource(tableNum(SysModelElement));
+        #
+        #    qbdsSysModelElement_Root.addRange(fieldNum(SysModelElement, Name));
+        #
+        #    // Include only top-level elements
+        #    qbrSysModelElementParentModelElement = qbdsSysModelElement_Root.addRange(fieldNum(SysModelElement, ParentModelElement));
+        #    qbrSysModelElementParentModelElement.value('0');
+        #    qbrSysModelElementParentModelElement.status(RangeStatus::Hidden);
+        #
+        #    // 2. Element type
+        #    qbdsSysModelElementType = qbdsSysModelElement_Root.addDataSource(tableNum(SysModelElementType));
+        #    qbdsSysModelElementType.addLink(fieldNum(SysModelElement, ElementType), fieldNum(SysModelElementType, RecId));
+        #    qbdsSysModelElementType.joinMode(JoinMode::InnerJoin);
+        #    qbdsSysModelElementType.fetchMode(QueryFetchMode::One2One);
+        #
+        #    qbdsSysModelElementType.addRange(fieldNum(SysModelElementType, Name));
+        #    qbdsSysModelElementType.addRange(fieldNum(SysModelElementType, TreeNodeName));
+        #
+        #
+        #    // 3. Model element with it's sub-elements
+        #    qbdsSysModelElement = qbdsSysModelElement_Root.addDataSource(tableNum(SysModelElement));
+        #
+        #    qbrSysModelElement = qbdsSysModelElement.addRange(fieldNum(SysModelElement, RecId));
+        #    qbrSysModelElement.value(strFmt('(((%1==0) && ()) || (() && ()))'));
+        #
+        #
+        #
+        #    qbdsSysModelElementData = qbdsSysModelElement_Root.addDataSource(tableNum(SysModelElementData));
+        #    qbdsSysModelElementData.joinMode(JoinMode::InnerJoin);
+        #    qbdsSysModelElementData.fetchMode(QueryFetchMode::One2One);
+        #    qbdsSysModelElementData.relations(true);
+        #
+        #
+        #    qbdsSysModelLayer = qbds2.addDataSource(tableNum(SysModelLayer));
+        #    qbdsSysModelLayer.addLink(fieldNum(SysModelElementData, Layer), fieldNum(SysModelLayer, RecId));
+        #    //qbdsSysModelLayer.fetchMode(QueryFetchMode::One2One);
+        #    qbdsSysModelLayer.joinMode(JoinMode::ExistsJoin);
+        #    //qbdsSysModelLayer.addSortField(fieldNum(SysModelLayer, Layer));
+        #
+        #    query.dataSourceTable(tableNum(SysModelElement)).addRange(fieldNum(SysModelElement, Name));
+        #    query.dataSourceTable(tableNum(SysModelElement)).addRange(fieldNum(SysModelElement, ParentId));
+        #    query.dataSourceTable(tableNum(SysModelElement)).addRange(fieldNum(SysModelElement, ElementType));
+        #    query.dataSourceTable(tableNum(SysModelElement)).addRange(fieldNum(SysModelElement, AxId));
+        #    query.dataSourceTable(tableNum(SysModelElement)).addRange(fieldNum(SysModelElement, RootModelElement));
+        #    query.dataSourceTable(tableNum(SysModelLayer)).addRange(fieldNum(SysModelLayer, Layer));
+        #
+        #
+        #
+        #    // Exclude projects
+        #    queryBuildRange = query.dataSourceTable(tableNum(SysModelElementType)).addRange(fieldNum(SysModelElementType, Name));
+        #    queryBuildRange.value(strFmt('%1,%2', SysQuery::valueNot('PrivateProject'), SysQuery::valueNot('SharedProject')));
+        #    queryBuildRange.status(RangeStatus::Locked);
+        #
+        #    query.dataSourceTable(tableNum(SysModelElementData)).addRange(fieldNum(SysModelElementData, Layer));
+        #    query.dataSourceTable(tableNum(SysModelElementData)).addRange(fieldNum(SysModelElementData, ModelId));
+        #
+        #    //
+        #    // Allow shared+private projects in repository; but disallow other non-aot utilElements
+        #    //
+        #    queryBuildRange = query.dataSourceTable(tableNum(SysModelElement)).addRange(fieldNum(SysModelElement,DataAreaId));
+        #    queryBuildRange.value(strFmt('((%1!=%2::%3) && (%1!=%2::%4))',fieldStr(SysModelElement,ElementType)
+        #                                                                 ,enumStr(UtilElementType)
+        #                                                                 ,queryValue(UtilElementType::ClassInternalHeader)
+        #                                                                 ,queryValue(UtilElementType::TableInternalHeader)));
+        #
+        #    queryBuildRange.status(RangeStatus::Hidden);
+        #
+        #    queryRun = new SysQueryRun(query);
+        #    */
+        #}
+      ENDSOURCE
+      SOURCE #classDeclaration
+        #class GitExport_Query extends GitExport
+        #{
+        #    QueryRun                queryRun;
+        #}
+      ENDSOURCE
+      SOURCE #dialogPostRun
+        #public void dialogPostRun(DialogRunbase dialog)
+        #{
+        #    Object  formRun;
+        #    ;
+        #
+        #    if(FormHasMethod(dialog.formRun(),"setQueryRanges"))
+        #    {
+        #        formRun = dialog.formRun();
+        #        formRun.setQueryRanges();
+        #    }
+        #
+        #    super(dialog);
+        #}
+      ENDSOURCE
+      SOURCE #initParmDefault
+        #public void initParmDefault()
+        #{
+        #    this.initQuery();
+        #
+        #    super();
+        #}
+      ENDSOURCE
+      SOURCE #initQuery
+        #private void initQuery()
+        #{
+        #    Query                   query = new Query();
+        #    QueryBuildDataSource    qbdsRoot;
+        #    QueryBuildDataSource    qbds1;
+        #    QueryBuildDataSource    qbds2;
+        #    QueryBuildDataSource    qbds3;
+        #    QueryBuildDataSource    qbds4;
+        #    QueryBuildRange         queryBuildRange;
+        #
+        #    // Root element
+        #    qbdsRoot = query.addDataSource(tableNum(SysModelElement));
+        #    queryBuildRange = qbdsRoot.addRange(fieldNum(SysModelElement, ParentModelElement));
+        #    queryBuildRange.value(queryValue(0));
+        #    //queryBuildRange.status(RangeStatus::Hidden);
+        #
+        #    //
+        #    qbds1 = qbdsRoot.addDataSource(tableNum(SysModelElement));
+        #    qbds1.joinMode(JoinMode::ExistsJoin);
+        #    qbds1.addLink(fieldNum(SysModelElement, RecId), fieldNum(SysModelElement, RootModelElement));
+        #
+        #    qbds2 = qbds1.addDataSource(tableNum(SysModelElementData));
+        #    qbds2.joinMode(JoinMode::InnerJoin);
+        #    qbds2.fetchMode(QueryFetchMode::One2One);
+        #    qbds2.relations(true);
+        #
+        #    qbds3 = qbds1.addDataSource(tableNum(SysModelElementType));
+        #    qbds3.addLink(fieldNum(SysModelElement, ElementType), fieldNum(SysModelElementType, RecId));
+        #    qbds3.joinMode(JoinMode::InnerJoin);
+        #    qbds3.fetchMode(QueryFetchMode::One2One);
+        #
+        #    qbds4 = qbds2.addDataSource(tableNum(SysModelLayer));
+        #    qbds4.addLink(fieldNum(SysModelElementData, Layer), fieldNum(SysModelLayer, RecId));
+        #    //qbds4.fetchMode(QueryFetchMode::One2One);
+        #    qbds4.joinMode(JoinMode::ExistsJoin);
+        #    //qbds4.addSortField(fieldNum(SysModelLayer, Layer));
+        #
+        #    query.dataSourceTable(tableNum(SysModelElement)).addRange(fieldNum(SysModelElement, Name));
+        #    //query.dataSourceTable(tableNum(SysModelElement)).addRange(fieldNum(SysModelElement, ParentId));
+        #    //query.dataSourceTable(tableNum(SysModelElement)).addRange(fieldNum(SysModelElement, ElementType));
+        #    //query.dataSourceTable(tableNum(SysModelElement)).addRange(fieldNum(SysModelElement, AxId));
+        #    //query.dataSourceTable(tableNum(SysModelElement)).addRange(fieldNum(SysModelElement, RootModelElement));
+        #    query.dataSourceTable(tableNum(SysModelLayer)).addRange(fieldNum(SysModelLayer, Layer));
+        #    SysQuery::findOrCreateRange(qbds2, fieldNum(SysModelElementData, RecId)).status(RangeStatus::Hidden);
+        #
+        #    // Include only top-level elements
+        #//    queryBuildRange = query.dataSourceTable(tableNum(SysModelElement)).addRange(fieldNum(SysModelElement, ParentModelElement));
+        #//    queryBuildRange.value('0');
+        #//    queryBuildRange.status(RangeStatus::Hidden);
+        #
+        #    // TODO: Exclude projects
+        #    queryBuildRange = query.dataSourceTable(tableNum(SysModelElementType)).addRange(fieldNum(SysModelElementType, RecId));
+        #    queryBuildRange.value(strFmt('%1,%2', SysQuery::valueNot(any2int(UtilElementType::PrivateProject)), SysQuery::valueNot(any2int(UtilElementType::SharedProject))));
+        #    queryBuildRange.status(RangeStatus::Hidden);
+        #
+        #    //query.dataSourceTable(tableNum(SysModelElementData)).addRange(fieldNum(SysModelElementData, Layer));
+        #    //query.dataSourceTable(tableNum(SysModelElementData)).addRange(fieldNum(SysModelElementData, ModelId));
+        #
+        #    //
+        #    // Allow shared+private projects in repository; but disallow other non-aot utilElements
+        #    //
+        #//    queryBuildRange = query.dataSourceTable(tableNum(SysModelElement)).addRange(fieldNum(SysModelElement,DataAreaId));
+        #//    queryBuildRange.value(strFmt('((%1!=%2::%3) && (%1!=%2::%4))',fieldStr(SysModelElement,ElementType)
+        #//                                                                 ,enumStr(UtilElementType)
+        #//                                                                 ,queryValue(UtilElementType::ClassInternalHeader)
+        #//                                                                 ,queryValue(UtilElementType::TableInternalHeader)));
+        #
+        #//    queryBuildRange.status(RangeStatus::Hidden);
+        #
+        #    queryRun = new SysQueryRun(query);
+        #}
+      ENDSOURCE
+      SOURCE #pack
+        #public container pack()
+        #{
+        #    return [#CurrentVersion, #CurrentList, queryRun.pack()];
+        #}
+      ENDSOURCE
+      SOURCE #queryRun
+        #public QueryRun queryRun()
+        #{
+        #    return queryRun;
+        #}
+      ENDSOURCE
+      SOURCE #report_DEL
+        #private void report_DEL()
+        #{
+        #    TreeNode    treeNode;
+        #    Set         set;
+        #    SetEnumerator   enumerator;
+        #    str         output;
+        #    UtilEntryLevel  layer;
+        #
+        #    nodeMapEnumerator.reset();
+        #    while (nodeMapEnumerator.moveNext())
+        #    {
+        #        treeNode = nodeMapEnumerator.currentKey();
+        #        set      = nodeMapEnumerator.currentValue();
+        #
+        #        output = treeNode.treeNodePath();
+        #
+        #        enumerator = set.getEnumerator();
+        #        while (enumerator.moveNext())
+        #        {
+        #            layer = enumerator.current();
+        #            output += strFmt('|%1', layer);
+        #        }
+        #        info(output);
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #run
+        #public void run()
+        #{
+        #    /*
+        #    #AOT
+        #
+        #    UtilIdElements          utilIdElementsParent;
+        #    SysModelLayer           modelLayer;
+        #    SysModelElement         sysModelElement, rootModelElement;
+        #
+        #    SysModelLayer           sysModelLayer;
+        #
+        #    List                    nodeList = new List(Types::Class);
+        #    ListEnumerator          listEnumerator;
+        #
+        #    Set                     set;
+        #
+        #
+        #    UtilEntryLevel          layer;
+        #
+        #    TreeNode                treeNode;
+        #    TreeNode                treeNodeLayer;
+        #    */
+        #    //progress = SysOperationProgress::newMultiBar(2, #AviUpdate, "Git export progress");
+        #
+        #    this.progressInit(strFmt("Exporting to %1", repoPath), 0, #AviUpdate, 2);
+        #
+        #    progress.setText('Loading...', 1);
+        #    this.buildNodeMap(null);
+        #info(strFmt('Nodes: %1', nodeMap.elements()));
+        #
+        #    this.exportAllLayers();
+        #
+        #    /*
+        #    stopWatch.Reset();
+        #    stopWatch.Start();
+        #    //listEnumerator = nodeList.getEnumerator();
+        #    nodeMapEnumerator = nodeMap.getEnumerator();
+        #
+        #    for (layer=0; layer<=16/*enumCnt(UtilEntryLevel)-1*/; layer++)
+        #    {
+        #        setPrefix(strFmt('%1', layer));
+        #
+        #        //listEnumerator.reset();
+        #        //while (listEnumerator.moveNext())
+        #        nodeMapEnumerator.reset();
+        #        while (nodeMapEnumerator.moveNext())
+        #        {
+        #            treeNode = nodeMapEnumerator.currentKey();
+        #            set      = nodeMapEnumerator.currentValue();
+        #
+        #if (!treeNode){breakpoint;continue;}
+        #            //treeNodeLayer = treeNode.getNodeInLayer(layer);
+        #            //if (treeNodeLayer)
+        #            //if (treeNode.AOTLayers().in(layer))
+        #            if (set.in(layer))
+        #            {
+        #                //info(strFmt('%1 %2\\%3', layer, treeNodeLayer.treeNodePath(), treeNodeLayer.treeNodeName()));
+        #                //treeNodeLayer.treeNodeRelease();
+        #                //treeNodeLayer = null;
+        #                info(strFmt('%1 %2\\%3', layer, treeNode.treeNodePath(), treeNode.treeNodeName()));
+        #            }
+        #
+        #            //if (layer == enumCnt(UtilEntryLevel)-1) // if processing the last layer
+        #            treeNode.treeNodeRelease();
+        #            treeNode = null;
+        #
+        #        }
+        #        //info(strFmt('Done %1', layer));
+        #    }
+        #    stopWatch.Stop();
+        #    info(strFmt('Map iterate Elapsed time: %1', CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds())));
+        #    */
+        #
+        #/*
+        #    //TODO: memory does not get released
+        #    mapEnumerator.reset();
+        #    while (mapEnumerator.moveNext())
+        #    {
+        #        treeNode = mapEnumerator.currentKey();
+        #i = treeNode.usageCount();
+        #        nodeMap.remove(mapEnumerator.currentKey());
+        #i = treeNode.usageCount();
+        #        treeNode.treeNodeRelease();
+        #i = treeNode.usageCount();
+        #        treeNode = null;
+        #        if (!nodeMap.elements())
+        #        {
+        #            mapEnumerator = null;
+        #            break;
+        #        }
+        #    }
+        #    xSession::removeAOC();
+        #    SysTreeNode::refreshAll();
+        #    SysFlushDictionary::doFlush();
+        #    SysFlushAOD::doFlush();
+        #    xSession::updateAOC();
+        #*/
+        #    /*
+        #    //nodeMap.empty();
+        #    mapEnumerator = null;
+        #
+        #    listEnumerator = null;
+        #    nodeList.empty();
+        #    */
+        #}
+      ENDSOURCE
+      SOURCE #showQueryValues
+        #public boolean showQueryValues()
+        #{
+        #    return true;
+        #}
+      ENDSOURCE
+      SOURCE #unpack
+        #public boolean unpack(container _packedClass)
+        #{
+        #    Version         version     = RunBase::getVersion(_packedClass);
+        #    PackedQueryRun  packedQueryRun;
+        #
+        #    switch (version)
+        #    {
+        #        case #CurrentVersion :
+        #            [version, #CurrentList, packedQueryRun] = _packedClass;
+        #
+        #            if (packedQueryRun)
+        #                queryRun = new QueryRun(packedQueryRun);
+        #            break;
+        #
+        #        default :
+        #            return false;
+        #    }
+        #
+        #    return true;
+        #}
+      ENDSOURCE
+      SOURCE #main
+        #public static void main(Args args)
+        #{
+        #    GitExport_Query export = new GitExport_Query();
+        #
+        #    if (export.prompt())
+        #    {
+        #        export.run();
+        #    }
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDCLASS
+
+***Element: END

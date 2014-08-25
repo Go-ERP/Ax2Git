@@ -7,15 +7,15 @@ Formatversion: 1
 ; --------------------------------------------------------------------------------
   VERSION 1
   
-  MENUITEM #GitSysContextMenuExport
+  MENUITEM #GitSysContextMenuExportQuery
     Type: 3
     PROPERTIES
-      Name                #GitSysContextMenuExport
-      Label               #Export AOT selection
+      Name                #GitSysContextMenuExportQuery
+      Label               #Export by query
       ObjectType          #Class
       Object              #GitSysContextMenuExport
-      Parameters          #Type=AOT
-      Origin              #{6AB921DF-AE99-4DBF-95E0-E928460F219B}
+      Parameters          #Type=Query
+      Origin              #{BFF557A4-766F-4937-B44B-C26E796E56E4}
     ENDPROPERTIES
     
   ENDMENUITEM

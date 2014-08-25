@@ -19,6 +19,7 @@ FORM #GitExportDialog
       #{
       #    #define.identifierName('GitLastPaths')
       #
+      #    GitExport               gitExport;
       #    container               lastPaths;
       #    str                     lastPathsStr;
       #    NoYes                   exportProjDef;
@@ -49,6 +50,8 @@ FORM #GitExportDialog
     SOURCE #closeOk
       #public void closeOk()
       #{
+      #    DialogRunbase dialog = element.args().caller();
+      #
       #    element.updateBox(filePath.getEditText(), false);
       #
       #    exportProjDef       = ExportProjDefControl.value();
@@ -62,7 +65,11 @@ FORM #GitExportDialog
       #
       #    xSysLastValue::saveLast(element);
       #
-      #    super();
+      #    dialog.updateServer();
+      #    if (gitExport.checkCloseDialog())
+      #    {
+      #        super();
+      #    }
       #}
     ENDSOURCE
     SOURCE #getBranch
@@ -117,6 +124,18 @@ FORM #GitExportDialog
       #public str getPath()
       #{
       #    return filePath.getEditText();
+      #}
+    ENDSOURCE
+    SOURCE #init
+      #public void init()
+      #{
+      #;
+      #    if (!element.args().caller())
+      #        throw error("@SYS90597");
+      #
+      #    gitExport =  element.args().caller().runbase();
+      #
+      #    super();
       #}
     ENDSOURCE
     SOURCE #initParmDefault
@@ -177,8 +196,6 @@ FORM #GitExportDialog
       #
       #    exportLayersControl.selection(exportLayers);
       #
-      #    gitOptionsGrp.enabled(exportLayers != GitExportLayers::AllLayers);
-      #
       #    layerControl.selection(layer);
       #    layerControl.enabled(exportLayers == GitExportLayers::SelectedLayer);
       #
@@ -197,6 +214,12 @@ FORM #GitExportDialog
       #    commitMessageControl.text(commitMessage);
       #
       #    super();
+      #}
+    ENDSOURCE
+    SOURCE #runBase
+      #RunBase runBase()
+      #{
+      #    return gitExport;
       #}
     ENDSOURCE
     SOURCE #unpack
@@ -304,11 +327,11 @@ FORM #GitExportDialog
     CONTAINER
       CONTROL BUTTONGROUP
         PROPERTIES
-          Name                #ButtonGroup
-          Left                #Auto (left)
+          Name                #BottomButtonGrp
+          Left                #Auto (right)
+          Top                 #Bottom edge
           ElementPosition     #1431655764
-          HierarchyParent     #DialogCommit
-          Style               #DialogCommitContainer
+          ArrangeMethod       #Horizontal, flush right
         ENDPROPERTIES
         
         METHODS
@@ -366,10 +389,9 @@ FORM #GitExportDialog
       
       CONTROL GROUP
         PROPERTIES
-          Name                #DialogCommit
-          Width               #Column width
-          ElementPosition     #1431655764
-          Style               #DialogCommit
+          Name                #DialogStartGrp
+          ElementPosition     #1073741822
+          HierarchyParent     #Dialog
         ENDPROPERTIES
         
         METHODS
@@ -405,10 +427,9 @@ FORM #GitExportDialog
       CONTROL GROUP
         PROPERTIES
           Name                #GitOptionsGrp
-          AutoDeclaration     #Yes
           Width               #Column width
           Height              #Column height
-          ElementPosition     #1610612734
+          ElementPosition     #1610612733
           HierarchyParent     #ElementGrp
           FrameType           #Edged 3D
           Caption             #Git options
@@ -440,7 +461,8 @@ FORM #GitExportDialog
           Name                #MainGrp
           Width               #Column width
           Height              #Column height
-          ElementPosition     #715827882
+          ElementPosition     #1431655764
+          HierarchyParent     #Main
           Style               #DialogContent
         ENDPROPERTIES
         
@@ -457,6 +479,51 @@ FORM #GitExportDialog
           HierarchyParent     #ElementGrp
           FrameType           #Edged 3D
           Caption             #@SYS22622
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #RightButtonGrp
+          ElementPosition     #1610612733
+          HierarchyParent     #Dialog
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TAB
+        PROPERTIES
+          Name                #Tab
+          ElementPosition     #715827882
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #Dialog
+          ElementPosition     #1610612733
+          HierarchyParent     #Tab
+          Caption             #Query options
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #Main
+          ElementPosition     #1879048189
+          HierarchyParent     #Tab
+          Caption             #Git options
         ENDPROPERTIES
         
         METHODS
@@ -494,7 +561,6 @@ FORM #GitExportDialog
         PROPERTIES
           Name                #CheckForDeletedControl
           AutoDeclaration     #Yes
-          Enabled             #No
           HelpText            #Check for objects that are present in repository, but missing in AOT and delete them from repository.
           ElementPosition     #1342177277
           HierarchyParent     #OptionGrp
@@ -563,8 +629,6 @@ FORM #GitExportDialog
             #
             #    layerControl.enabled(exportLayersControl.selection() == GitExportLayers::SelectedLayer);
             #
-            #    gitOptionsGrp.enabled(exportLayersControl.selection() != GitExportLayers::AllLayers);
-            #
             #    return ret;
             #}
           ENDSOURCE
@@ -630,7 +694,7 @@ FORM #GitExportDialog
         PROPERTIES
           Name                #Cancel
           ElementPosition     #1610612733
-          HierarchyParent     #ButtonGroup
+          HierarchyParent     #BottomButtonGrp
           Command             #264
         ENDPROPERTIES
         
@@ -642,7 +706,7 @@ FORM #GitExportDialog
         PROPERTIES
           Name                #Export
           ElementPosition     #1073741822
-          HierarchyParent     #ButtonGroup
+          HierarchyParent     #BottomButtonGrp
           Text                #@SYS5469
           DefaultButton       #Yes
           Command             #263

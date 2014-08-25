@@ -1,0 +1,174 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: JOB
+
+; 
+; --------------------------------------------------------------------------------
+  JOBVERSION 1
+  
+  SOURCE #treeNode_AOTLayers_benchmark
+    #static void treeNode_AOTLayers_benchmark(Args _args)
+    #{
+    #    #define.nodePath(@'\Data dictionary\Tables\CustTable')
+    #    //#define.nodePath(@'\Data dictionary\Views\ESNSalesAnalysisSRS')
+    #    TreeNode        treeNode;
+    #    TreeNode        treeNodeInLayer;
+    #    SetEnumerator   setEnumerator;
+    #    UtilEntryLevel  layer;
+    #
+    #    SysModelLayer       sysModelLayer;
+    #    SysModelElement     sysModelElement;
+    #    SysModelElement     sysModelElementChild;
+    #    SysModelElementData sysModelElementData;
+    #    SysModelElementType sysModelElementType;
+    #
+    #    System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
+    #    TreeNodePath        treeNodePathFull;
+    #    TreeNodePath        treeNodePath;
+    #    TreeNodeName        treeNodeName;
+    #    int                 lastSlashPos;
+    #
+    #
+    #    treeNode = TreeNode::findNode(#nodePath);
+    #
+    #    // Incomplete result in some cases (e.g. Tables):
+    #    stopWatch.Start();
+    #    info('-------------------------------------');
+    #    info('treeNode.AOTLayers():');
+    #    setEnumerator = treeNode.AOTLayers().getEnumerator();
+    #    while (setEnumerator.moveNext())
+    #    {
+    #        layer = setEnumerator.current();
+    #        info(strFmt('%1', layer));
+    #    }
+    #    stopWatch.Stop();
+    #    info(strFmt('Elapsed time: %1', CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds())));
+    #
+    #    info('-------------------------------------');
+    #    info('treeNode.getNodeInLayer():');
+    #    stopWatch.Reset();
+    #    stopWatch.Start();
+    #    for (layer=UtilEntryLevel::sys; layer<=UtilEntryLevel::usp; layer++)
+    #    {
+    #        treeNodeInLayer = treeNode.getNodeInLayer(layer);
+    #        if (treeNodeInLayer)
+    #        {
+    #            info(strFmt('%1', layer));
+    #            treeNodeInLayer.treeNodeRelease();
+    #            treeNodeInLayer = null;
+    #        }
+    #    }
+    #    stopWatch.Stop();
+    #    info(strFmt('Elapsed time: %1', CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds())));
+    #
+    #    info('-------------------------------------');
+    #    info('sysModelElement 2 queries:');
+    #    stopWatch.Reset();
+    #    stopWatch.Start();
+    #
+    #    treeNodePathFull = treeNode.treeNodePath();
+    #    lastSlashPos = strScan(treeNodePathFull, @'\', strLen(treeNodePathFull), -strLen(treeNodePathFull));
+    #    treeNodePath = subStr(treeNodePathFull, 1, lastSlashPos-1);
+    #    treeNodeName = subStr(treeNodePathFull, lastSlashPos+1, strLen(treeNodePathFull));
+    #
+    #    while select sysModelElement
+    #        where sysModelElement.Name == treeNodeName
+    #    join sysModelElementType
+    #        where sysModelElementType.RecId == sysModelElement.ElementType
+    #           && sysModelElementType.TreeNodeName == treeNodePath
+    #    join sysModelElementData
+    #        where sysModelElementData.ModelElement == sysModelElement.RecId
+    #    join sysModelLayer
+    #        group by Layer
+    #        where sysModelLayer.RecId == sysModelElementData.Layer
+    #    {
+    #        info(strFmt('%1', sysModelLayer.Layer));
+    #    }
+    #    info('---plus---');
+    #    while select sysModelElement
+    #        where sysModelElement.Name == treeNodeName
+    #    join sysModelElementType
+    #        where sysModelElementType.RecId == sysModelElement.ElementType
+    #           && sysModelElementType.TreeNodeName == treeNodePath
+    #    join sysModelElementChild
+    #        where (sysModelElementChild.RootModelElement && sysModelElementChild.RootModelElement == sysModelElement.RecId) // any sub-elements
+    #    join sysModelElementData
+    #        where sysModelElementData.ModelElement == sysModelElementChild.RecId
+    #    join sysModelLayer
+    #        group by Layer
+    #        where sysModelLayer.RecId == sysModelElementData.Layer
+    #    {
+    #        info(strFmt('%1', sysModelLayer.Layer));
+    #    }
+    #    stopWatch.Stop();
+    #    info(strFmt('Elapsed time: %1', CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds())));
+    #
+    #
+    #    info('-------------------------------------');
+    #    info('sysModelElement 1 complex query:');
+    #    stopWatch.Reset();
+    #    stopWatch.Start();
+    #
+    #    treeNodePathFull = treeNode.treeNodePath();
+    #    lastSlashPos = strScan(treeNodePathFull, @'\', strLen(treeNodePathFull), -strLen(treeNodePathFull));
+    #    treeNodePath = subStr(treeNodePathFull, 1, lastSlashPos-1);
+    #    treeNodeName = subStr(treeNodePathFull, lastSlashPos+1, strLen(treeNodePathFull));
+    #
+    #    while select sysModelElement
+    #        where sysModelElement.Name == treeNodeName
+    #    join sysModelElementType
+    #        where sysModelElementType.RecId == sysModelElement.ElementType
+    #           && sysModelElementType.TreeNodeName == treeNodePath
+    #    join sysModelElementChild
+    #        where ( sysModelElementChild.RootModelElement && sysModelElementChild.RootModelElement == sysModelElement.RecId) // any sub-elements
+    #           || (!sysModelElementChild.RootModelElement && sysModelElementChild.RecId == sysModelElement.RecId) // or the element itself
+    #    join sysModelElementData
+    #        where sysModelElementData.ModelElement == sysModelElementChild.RecId
+    #    join sysModelLayer
+    #        group by Layer
+    #        where sysModelLayer.RecId == sysModelElementData.Layer
+    #    {
+    #        info(strFmt('%1', sysModelLayer.Layer));
+    #    }
+    #    stopWatch.Stop();
+    #    info(strFmt('Elapsed time: %1', CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds())));
+    #
+    #    info('-------------------------------------');
+    #    info('sysModelElement again 2 queries:');
+    #    stopWatch.Reset();
+    #    stopWatch.Start();
+    #
+    #    treeNodePathFull = treeNode.treeNodePath();
+    #    lastSlashPos = strScan(treeNodePathFull, @'\', strLen(treeNodePathFull), -strLen(treeNodePathFull));
+    #    treeNodePath = subStr(treeNodePathFull, 1, lastSlashPos-1);
+    #    treeNodeName = subStr(treeNodePathFull, lastSlashPos+1, strLen(treeNodePathFull));
+    #
+    #    select firstOnly1 sysModelElement
+    #        where sysModelElement.Name == treeNodeName
+    #    join sysModelElementType
+    #        where sysModelElementType.RecId == sysModelElement.ElementType
+    #           && sysModelElementType.TreeNodeName == treeNodePath;
+    #
+    #    while select sysModelElementChild
+    #        where ( sysModelElementChild.RootModelElement && sysModelElementChild.RootModelElement == sysModelElement.RecId) // any sub-elements
+    #           || (!sysModelElementChild.RootModelElement && sysModelElementChild.RecId == sysModelElement.RecId)            // or the element itself
+    #    join sysModelElementData
+    #        where sysModelElementData.ModelElement == sysModelElementChild.RecId
+    #    join sysModelLayer
+    #        group by Layer
+    #        where sysModelLayer.RecId == sysModelElementData.Layer
+    #    {
+    #        info(strFmt('%1', sysModelLayer.Layer));
+    #    }
+    #    stopWatch.Stop();
+    #    info(strFmt('Elapsed time: %1', CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds())));
+    #
+    #}
+  ENDSOURCE
+  PROPERTIES
+    Origin              #{1D9AF067-02E5-4B54-ACD3-22EABAC1A155}
+  ENDPROPERTIES
+  
+
+***Element: END

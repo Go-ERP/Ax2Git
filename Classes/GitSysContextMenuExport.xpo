@@ -46,10 +46,16 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #run
-        #void run()
+        #void run(Args args)
         #{
-        #    ;
-        #    GitExport::construct(lastAotSelection.first()).run();
+        #    GitExport   gitExport = GitExport::construct(args.menuItemName());
+        #
+        #    gitExport.parmRootNode(lastAotSelection.first());
+        #
+        #    if (gitExport.prompt())
+        #    {
+        #        gitExport.run();
+        #    }
         #}
         #
       ENDSOURCE
@@ -63,8 +69,8 @@ Formatversion: 1
         #static void main(Args args)
         #{
         #    GitSysContextMenuExport  export = new GitSysContextMenuExport();
-        #    ;
-        #    export.run();
+        #
+        #    export.run(args);
         #}
       ENDSOURCE
     ENDMETHODS
