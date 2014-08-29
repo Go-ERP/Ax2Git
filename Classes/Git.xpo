@@ -193,6 +193,69 @@ Formatversion: 1
         #    return '';
         #}
       ENDSOURCE
+      SOURCE #getLog
+        #public static container getLog(
+        #    str         _repository,
+        #    str         _file,
+        #    int         _lines = 10)
+        #{
+        #    #define.LineSeparator('\n')
+        #    #define.FieldSeparator('\t')
+        #
+        #    str         parmStr;
+        #    str         logStr;
+        #    container   linesCon;
+        #    int         lineNum;
+        #
+        #    str         commitHash;
+        #    str         subject;
+        #    container   filesCon;
+        #
+        #    container   ret;
+        #    int         i;
+        #    str         line;
+        #
+        #    // Create command string:
+        #    parmStr  = 'log';
+        #    parmStr += strFmt(' -n %1', _lines);
+        #    parmStr += ' --name-status';
+        #    if (_file) parmStr += ' --follow';
+        #    parmStr += ' --no-merges';
+        #    parmStr += ' --date=iso';
+        #    parmStr += strFmt(' --pretty=format:"\%h%1\%s"', #FieldSeparator);
+        #    parmStr += ' ' + _file;
+        #
+        #    // Execute the command:
+        #    logStr = Git::executeCommand(_repository, parmStr);
+        #
+        #    // Parse result:
+        #    linesCon = str2con(logStr, #LineSeparator);
+        #    for (i=1; i<=conLen(linesCon); i++)
+        #    {
+        #        lineNum++;
+        #        line = conPeek(linesCon, i);
+        #
+        #        if (!line)
+        #        {
+        #            lineNum = 0;
+        #            ret += [[commitHash, subject, filesCon]];
+        #            filesCon = conNull();
+        #            continue;
+        #        }
+        #
+        #        if (lineNum == 1)
+        #        {
+        #            [commitHash, subject] = str2con(line, #FieldSeparator);
+        #        }
+        #        else if (lineNum > 1)
+        #        {
+        #            filesCon += [str2con(line, #FieldSeparator)];
+        #        }
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
       SOURCE #isClean
         #public static boolean isClean(str _repository)
         #{

@@ -1,0 +1,31 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: JOB
+
+; 
+; --------------------------------------------------------------------------------
+  JOBVERSION 1
+  
+  SOURCE #Test_getLog
+    #static void Test_getLog(Args _args)
+    #{
+    #    #define.Repo(@'C:\Users\bmindaugas\esn-old.git')
+    #    #define.File(@'Classes\ESNInterfaceExportSalesInventOrder.xpo')
+    #
+    #    container   branches = Git::getBranches(#Repo, true);
+    #    container   log      = Git::getLog(#Repo, ''); //#File);
+    #    int         i;
+    #
+    #    for (i=1; i<=conLen(log); i++)
+    #    {
+    #        info(conPeek(log, i));
+    #    }
+    #}
+  ENDSOURCE
+  PROPERTIES
+    Origin              #{6B85ABA4-F8FB-437B-921A-4D931A7839DB}
+  ENDPROPERTIES
+  
+
+***Element: END
