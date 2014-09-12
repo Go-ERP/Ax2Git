@@ -9,12 +9,35 @@ Formatversion: 1
   
   MENU #SysContextMenu
     PROPERTIES
-      Name                #SysContextMenu
-      Label               #@SYS28637
-      SecurityKey         #SysDevelopment
-      Origin              #{100E0000-0000-1000-FB09-5DBF82A26477}
-    ENDPROPERTIES
-    
+  Name                #SysContextMenu
+  Label               #@SYS28637
+  ConfigurationKey    #
+  SecurityKey         #SysDevelopment
+  NeededAccessLevel   #View
+  ShowParentModule    #Yes
+  SetCompany          #No
+  WebTarget           #
+  NormalImage         #
+  NormalResource      #0
+  ImageLocation       #File
+  DisabledImage       #
+  DisabledResource    #0
+  DisabledImageLocation #File
+  MenuItemType        #Display
+  MenuItemName        #
+  Parameters          #
+  CountryRegionCodes  #
+  ShortCut            #
+  CreatedBy           #-AOS-
+  CreationDate        #16/11/2012
+  CreationTime        #16:26:28
+  ChangedBy           #-AOS-
+  ChangedDate         #16/11/2012
+  ChangedTime         #16:26:28
+  Origin              #{100E0000-0000-1000-FB09-5DBF82A26477}
+ENDPROPERTIES
+
+ 
     MENUITEM
       PROPERTIES
         Name                #Compare existing code to proposed fix
@@ -632,29 +655,6 @@ Formatversion: 1
       ENDPROPERTIES
       
     ENDMENUITEM
-    MENU #Git
-      PROPERTIES
-        Name                #Git
-        Label               #Git
-      ENDPROPERTIES
-      
-      MENUITEM
-        PROPERTIES
-          Name                #Export AOT selection
-          MenuItemType        #Action
-          MenuItemName        #GitSysContextMenuExport
-        ENDPROPERTIES
-        
-      ENDMENUITEM
-      MENUITEM
-        PROPERTIES
-          Name                #Export by query
-          MenuItemType        #Action
-          MenuItemName        #GitSysContextMenuExportQuery
-        ENDPROPERTIES
-        
-      ENDMENUITEM
-    ENDMENU
   ENDMENU
   
 

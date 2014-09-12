@@ -1,0 +1,257 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: DBT
+
+; 
+; --------------------------------------------------------------------------------
+  TABLEVERSION 1
+  
+  TABLE #SysVersionControlTmpChange
+    EnforceFKRelation 0
+    PROPERTIES
+  ID                  #1983
+  Name                #SysVersionControlTmpChange
+  Label               #@SYS85911
+  FormRef             #SysVersionControlChangesHistory
+  ListPageRef         #
+  ReportRef           #
+  PreviewPartRef      #
+  SearchLinkRefType   #Url
+  SearchLinkRefName   #
+  Table               #SysVersionControlTmpChange
+  TitleField1         #ChangeNumber
+  TitleField2         #VCSDate
+  TableType           #InMemory
+  TableContents       #Not specified
+  Systemtable         #Yes
+  ConfigurationKey    #
+  SecurityKey         #
+  MaxAccessMode       #Delete
+  Visible             #Yes
+  AOSAuthorization    #None
+  CacheLookup         #None
+  CreateRecIdIndex    #No
+  SaveDataPerCompany  #No
+  SaveDataPerPartition #Yes
+  TableGroup          #Main
+  PrimaryIndex        #KeyIdx
+  ClusterIndex        #KeyIdx
+  ReplacementKey      #
+  IsLookup            #No
+  AnalysisDimensionType #Auto
+  AnalysisIdentifier  #
+  SingularLabel       #
+  ModifiedDateTime    #No
+  DEL_modifiedTime    #No
+  ModifiedBy          #No
+  ModifiedTransactionId #No
+  CreatedDateTime     #No
+  DEL_createdTime     #No
+  CreatedBy           #No
+  CreatedTransactionId #No
+  OccEnabled          #Yes
+  DeveloperDocumentation  #
+  EntityRelationshipType  #Entity
+  Extends             #
+  Abstract            #No
+  InstanceRelationType #
+  SupportInheritance  #No
+  ValidTimeStateFieldType   #None
+  CountryRegionCodes  #
+  CountryRegionContextField     #
+  CreatedBy           #-AOS-
+  CreationDate        #16/11/2012
+  CreationTime        #15:54:55
+  ChangedBy           #-AOS-
+  ChangedDate         #16/11/2012
+  ChangedTime         #16:32:56
+  Origin              #{2C1A07BF-0000-1000-49C6-44EB3BD26A15}
+  LegacyId            #1983
+ENDPROPERTIES
+
+ 
+    FIELDS
+      FIELD #ChangeNumber
+        INT64
+        PROPERTIES
+          Name                #ChangeNumber
+          Table               #SysVersionControlTmpChange
+          Origin              #{064A99E8-FD8D-429F-AF18-75A048D23620}
+          LegacyId            #7
+          ExtendedDataType    #SysVersionControlChangeNumber
+        ENDPROPERTIES
+        
+      FIELD #Comment
+        STRING
+        PROPERTIES
+          Name                #Comment
+          Table               #SysVersionControlTmpChange
+          Origin              #{0A1D8FFD-80D4-472D-8D3F-F212768D1BC4}
+          LegacyId            #2
+          ExtendedDataType    #SysVersionControlItemComment
+          StringSize          #(Memo)
+        ENDPROPERTIES
+        
+      FIELD #ComputerName
+        STRING
+        PROPERTIES
+          Name                #ComputerName
+          Table               #SysVersionControlTmpChange
+          Origin              #{D6922AC7-BF8F-42C0-ADBA-3DFA9BF24B4B}
+          LegacyId            #6
+          ExtendedDataType    #ComputerName
+          StringSize          #30
+        ENDPROPERTIES
+        
+      FIELD #ShortComment
+        STRING
+        PROPERTIES
+          Name                #ShortComment
+          Table               #SysVersionControlTmpChange
+          Origin              #{220431BC-B8F8-405F-BBBC-535FAC858A6B}
+          LegacyId            #8
+          ExtendedDataType    #SysVersionControlItemShortComment
+          StringSize          #60
+        ENDPROPERTIES
+        
+      FIELD #StatusText
+        STRING
+        PROPERTIES
+          Name                #StatusText
+          Table               #SysVersionControlTmpChange
+          Origin              #{E6337605-6CF5-4E04-86B3-F3F029C77D3A}
+          LegacyId            #1
+          ExtendedDataType    #SysVersionControlStatusText
+        ENDPROPERTIES
+        
+      FIELD #User
+        STRING
+        PROPERTIES
+          Name                #User
+          Table               #SysVersionControlTmpChange
+          Origin              #{4F8414FC-722C-465A-8876-98E7CCC53D67}
+          LegacyId            #3
+          ExtendedDataType    #SysVersionControlUser
+          StringSize          #255
+        ENDPROPERTIES
+        
+      FIELD #VCSDate
+        DATE
+        PROPERTIES
+          Name                #VCSDate
+          Table               #SysVersionControlTmpChange
+          Origin              #{E8E8D715-8679-464B-82C8-A7AB819391DA}
+          LegacyId            #4
+          ExtendedDataType    #SysVersionControlItemDate
+        ENDPROPERTIES
+        
+      FIELD #VCSTime
+        TIME
+        PROPERTIES
+          Name                #VCSTime
+          Label               #@SYS8827
+          HelpText            #@SYS98628
+          Table               #SysVersionControlTmpChange
+          Origin              #{D1ABD163-F772-4A9C-92D7-F13510BCE27F}
+          LegacyId            #9
+          ExtendedDataType    #TimeOfDay
+        ENDPROPERTIES
+        
+    ENDFIELDS
+    GROUPS
+      GROUP #ChangelistHeader
+        PROPERTIES
+          Name                #ChangelistHeader
+          Label               #@SYS2952
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #ChangeNumber
+          #User
+          #ComputerName
+          #VCSDate
+          #VCSTime
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #ChangesHistoryGrid
+        PROPERTIES
+          Name                #ChangesHistoryGrid
+          Label               #@SYS9039
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #ChangeNumber
+          #StatusText
+          #VCSDate
+          #VCSTime
+          #User
+          #ShortComment
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Comment
+        PROPERTIES
+          Name                #Comment
+          Label               #@SYS7576
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Comment
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #ModifiedBy
+        PROPERTIES
+          Name                #ModifiedBy
+          Label               #@SYS75729
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #User
+          #ComputerName
+          #VCSDate
+          #VCSTime
+        ENDGROUPFIELDS
+      ENDGROUP
+    ENDGROUPS
+    
+    INDICES
+      #KeyIdx
+      PROPERTIES
+        Name                #KeyIdx
+        AllowDuplicates     #No
+        Origin              #{2B060001-07BF-1000-4B65-794964780000}
+        LegacyId            #1
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #ChangeNumber
+      ENDINDEXFIELDS
+      
+    ENDINDICES
+    FULLTEXTINDICES
+    ENDFULLTEXTINDICES
+    REFERENCES
+    ENDREFERENCES
+    
+    DELETEACTIONS
+    ENDDELETEACTIONS
+    
+    METHODS
+      SOURCE #generateShortComment
+        #private SysVersionControlItemShortComment generateShortComment()
+        #{
+        #    return strrem(this.Comment, '\n\r');
+        #}
+      ENDSOURCE
+      SOURCE #insert
+        #public void insert()
+        #{
+        #    this.ShortComment = this.generateShortComment();
+        #    super();
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDTABLE
+  
+
+***Element: END

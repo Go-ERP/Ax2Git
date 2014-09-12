@@ -1,0 +1,481 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: FRM
+
+; 
+; --------------------------------------------------------------------------------
+FRMVERSION 12
+
+FORM #SysVersionControlChangeContents
+  PROPERTIES
+  Name                #SysVersionControlChangeContents
+  FormTemplate        #None
+  InteractionClass    #
+  AllowPreLoading     #Yes
+  CreatedBy           #-AOS-
+  CreationDate        #16/11/2012
+  CreationTime        #16:25:15
+  ChangedBy           #-AOS-
+  ChangedDate         #12/09/2014
+  ChangedTime         #18:21:48
+  Origin              #{46FB46BF-5B8A-4CBD-9FDB-00B3FE7A50D7}
+ENDPROPERTIES
+
+  METHODS
+    SOURCE #classDeclaration
+      #public class FormRun extends ObjectRun
+      #{
+      #    SysVersionControlTmpChange change;
+      #    SysVersionControlTmpItem contentsItem;
+      #}
+    ENDSOURCE
+    SOURCE #fetchData
+      #//AOSRunmode::Client
+      #void fetchData(SysVersionControlChangeNumber _changeNumber, utcdatetime _changeDateTime, SysVersionControlItemComment _changeComments)
+      #{
+      #    SysVersionControlTmpItem contentsAddition;
+      #
+      #    startLengthyOperation();
+      #
+      #    //Remove already fetched data
+      #    delete_from contentsItem;
+      #
+      #    contentsAddition = versioncontrol.getChangeNumberContents(_changeNumber, _changeDateTime, _changeComments);
+      #
+      #    while select contentsAddition
+      #    {
+      #        contentsItem.data(contentsAddition);
+      #        contentsItem.insert();
+      #    }
+      #    contents_ds.executeQuery();
+      #}
+    ENDSOURCE
+    SOURCE #init
+      #public void init()
+      #{
+      #    SysVersionControlSystem sysVersionControlSystem = versioncontrol.parmSysVersionControlSystem();
+      #
+      #    if (SysVersionControlParameters::find().vcsEnabled == EnableDisable::Disable)
+      #    {
+      #        throw error("@SYS135983" + ' ' + strfmt("@SYS120745", "@SYS85914"), '', SysInfoAction_Formrun::newFormname(formstr(SysVersionControlParametersDev)));
+      #    }
+      #
+      #    super();
+      #
+      #    aotImage.imageList(new ImageListAppl_Aot().imageList());
+      #
+      #    if (sysVersionControlSystem && !sysVersionControlSystem.supportChangeVersion())
+      #    {
+      #        overview_Version.visible(false);
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #run
+      #public void run()
+      #{
+      #    SysVersionControlTmpChange callerChangeItem;
+      #    SysVersionControlTmpItem   callerItem;
+      #    utcdatetime dateTimeChange;
+      #
+      #    // BP deviation documented:
+      #    contents.setTmp();
+      #    contents.checkRecord(false);
+      #    contents.setTmpData(contentsItem);
+      #
+      #    if (element.args() &&
+      #        element.args().record())
+      #    {
+      #        if (element.args().record() is SysVersionControlTmpChange)
+      #        {
+      #            callerChangeItem = element.args().record() as SysVersionControlTmpChange;
+      #            dateTimeChange = DateTimeUtil::newDateTime(callerChangeItem.vcsDate, callerChangeItem.vcsTime);
+      #            this.fetchData(callerChangeItem.ChangeNumber, dateTimeChange, callerChangeItem.Comment);
+      #        }
+      #        else if (element.args().record() is SysVersionControlTmpItem)
+      #        {
+      #            callerItem = element.args().record() as SysVersionControlTmpItem;
+      #            dateTimeChange = DateTimeUtil::newDateTime(callerItem.vcsDate, callerItem.vcsTime);
+      #            this.fetchData(callerItem.ChangeNumber, dateTimeChange, callerItem.Comment);
+      #        }
+      #    }
+      #    super();
+      #
+      #    if (contents)
+      #        buttonGroup.enabled(true);
+      #    else
+      #        buttonGroup.enabled(false);
+      #
+      #}
+    ENDSOURCE
+  ENDMETHODS
+  OBJECTBANK
+    PROPERTIES
+    ENDPROPERTIES
+    
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #Contents
+          Table               #SysVersionControlTmpItem
+          AllowEdit           #No
+          AllowCreate         #No
+          AllowDelete         #No
+          InsertAtEnd         #No
+          InsertIfEmpty       #No
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+        SOURCE #active
+          #public int active()
+          #{
+          #    int ret;
+          #    ret = super();
+          #
+          #    element.lockWindowUpdate(true);
+          #    if (contents)
+          #    {
+          #        buttonGroup.enabled(true);
+          #        if (contents.getControllable() is SysTreeNode)
+          #        {
+          #            sysCompare.enabled(true);
+          #            openNewWindow.enabled(true);
+          #        }
+          #        else
+          #        {
+          #            sysCompare.enabled(false);
+          #            openNewWindow.enabled(false);
+          #        }
+          #
+          #    }
+          #    else
+          #    {
+          #        buttonGroup.enabled(false);
+          #    }
+          #
+          #    element.lockWindowUpdate(false);
+          #
+          #    return ret;
+          #}
+        ENDSOURCE
+        SOURCE #linkActive
+          #public void linkActive()
+          #{
+          #    SysVersionControlTmpChange callerChange;
+          #    SysVersionControlTmpItem callerItem;
+          #    utcdatetime dateTimeChange;
+          #
+          #    super();
+          #
+          #    if (element.args() &&
+          #        element.args().record())
+          #    {
+          #        if (element.args().record() is SysVersionControlTmpChange)
+          #        {
+          #            callerChange = element.args().record() as SysVersionControlTmpChange;
+          #            dateTimeChange = DateTimeUtil::newDateTime(callerChange.vcsDate, callerChange.vcsTime);
+          #            element.fetchData(callerChange.ChangeNumber, dateTimeChange, callerChange.Comment);
+          #        }
+          #        else if (element.args().record() is SysVersionControlTmpItem)
+          #        {
+          #            callerItem = element.args().record() as SysVersionControlTmpItem;
+          #            dateTimeChange = DateTimeUtil::newDateTime(callerItem.vcsDate, callerItem.vcsTime);
+          #            element.fetchData(callerItem.ChangeNumber, dateTimeChange, callerItem.Comment);
+          #        }
+          #    }
+          #}
+        ENDSOURCE
+      ENDMETHODS
+    ENDDATASOURCE
+  ENDOBJECTBANK
+  
+  REFERENCEDATASOURCES
+  ENDREFERENCEDATASOURCES
+  
+  JOINS
+  ENDJOINS
+  
+  PARTREFERENCES
+  ENDPARTREFERENCES
+  
+  DESIGN
+    PROPERTIES
+      Caption             #@SYS14861
+      TitleDatasource     #Contents
+      WindowType          #Workspace
+      SetCompany          #No
+      ViewEditMode        #Edit
+    ENDPROPERTIES
+    
+    CONTAINER
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #ButtonGroup
+          AutoDeclaration     #Yes
+          ElementPosition     #1879048190
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GRID
+        PROPERTIES
+          Name                #CopyOfGrid
+          AutoDeclaration     #Yes
+          Width               #Column width
+          Height              #Column height
+          VerticalSpacing     #4
+          ElementPosition     #1073741823
+          HierarchyParent     #OverviewTab
+          DataSource          #Contents
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #Overview
+          ElementPosition     #1610612734
+          HierarchyParent     #CopyOfGrid
+          BackgroundColor     #Window background
+          DataSource          #Contents
+          DataGroup           #ChangelistGrid
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TAB
+        PROPERTIES
+          Name                #Tab
+          Width               #Column width
+          Height              #Column height
+          HelpText            #@SYS30351
+          ElementPosition     #1610612734
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #OverviewTab
+          VerticalSpacing     #0
+          ElementPosition     #1073741823
+          HierarchyParent     #Tab
+          Caption             #@SYS9039
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #OpenNewWindow
+          AutoDeclaration     #Yes
+          HelpText            #@SYS85924
+          ElementPosition     #2013265918
+          HierarchyParent     #ButtonGroup
+          Text                #@SYS53405
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    super();
+            #    contents.openNewWindow();
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #ViewFile
+          HelpText            #@SYS85923
+          ElementPosition     #2080374782
+          HierarchyParent     #ButtonGroup
+          Text                #@SYS85921
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    super();
+            #    contents.viewFile();
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #Overview_Version
+          AutoDeclaration     #Yes
+          ElementPosition     #1610612734
+          HierarchyParent     #Overview
+          DataSource          #Contents
+          DataField           #Version
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #sysCompare
+          AutoDeclaration     #Yes
+          ElementPosition     #1879048190
+          HierarchyParent     #ButtonGroup
+          DataSource          #Contents
+          MenuItemType        #Action
+          MenuItemName        #sysCompare
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #SysVersionControlGet
+          ElementPosition     #1073741823
+          HierarchyParent     #ButtonGroup
+          MultiSelect         #Yes
+          MenuItemType        #Action
+          MenuItemName        #SysVersionControlGet
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #SysVersionControlItemHistory
+          ElementPosition     #1610612734
+          HierarchyParent     #ButtonGroup
+          MenuItemName        #SysVersionControlItemHistory
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL WINDOW
+        PROPERTIES
+          Name                #AOTImage
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #16
+          Height              #16
+          ElementPosition     #1073741823
+          HierarchyParent     #CopyOfGrid
+          BackStyle           #Transparent
+          ShowLabel           #No
+          DataSource          #Contents
+          DataField           #ImageRes
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+    ENDCONTAINER
+    
+  ENDDESIGN
+  
+  PERMISSIONS #Permissions
+    PROPERTIES
+    ENDPROPERTIES
+    
+    PERMISSIONSET #Read
+      PROPERTIES
+      ENDPROPERTIES
+      
+      FORM #Controls
+      ENDFORM
+      
+    TABLES #Tables
+    ENDTABLES
+    
+  SERVERMETHODS #Server Methods
+  ENDSERVERMETHODS
+  
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Update
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Create
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Delete
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+ENDPERMISSIONS
+
+ENDFORM
+
+
+***Element: END

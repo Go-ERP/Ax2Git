@@ -1,0 +1,354 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: FRM
+
+; 
+; --------------------------------------------------------------------------------
+FRMVERSION 12
+
+FORM #SysVersionControlChangesHistory
+  PROPERTIES
+  Name                #SysVersionControlChangesHistory
+  FormTemplate        #None
+  InteractionClass    #
+  AllowPreLoading     #Yes
+  CreatedBy           #-AOS-
+  CreationDate        #16/11/2012
+  CreationTime        #16:25:15
+  ChangedBy           #-AOS-
+  ChangedDate         #12/09/2014
+  ChangedTime         #18:22:13
+  Origin              #{C607CB28-1B65-480B-A343-44A6E67FAE00}
+ENDPROPERTIES
+
+  METHODS
+    SOURCE #classDeclaration
+      #public class FormRun extends ObjectRun
+      #{
+      #    SysVersionControlTmpChange change;
+      #    SysVersionControlTmpItem contentsItem;
+      #}
+    ENDSOURCE
+    SOURCE #fetchData
+      #void fetchData()
+      #{
+      #    startLengthyOperation();
+      #
+      #    change = versioncontrol.getChangesHistory();
+      #
+      #    // BP deviation documented
+      #    changes.setTmp();
+      #    changes.checkRecord(false);
+      #    changes.setTmpData(change);
+      #}
+    ENDSOURCE
+    SOURCE #init
+      #public void init()
+      #{
+      #    if (SysVersionControlParameters::find().vcsEnabled == EnableDisable::Disable)
+      #    {
+      #        throw error("@SYS135983" + ' ' + strfmt("@SYS120745", "@SYS85914"), '', SysInfoAction_Formrun::newFormname(formstr(SysVersionControlParametersDev)));
+      #    }
+      #
+      #    super();
+      #}
+    ENDSOURCE
+    SOURCE #run
+      #public void run()
+      #{
+      #    this.fetchData();
+      #
+      #    // BP deviation documented
+      #    contents.setTmp();
+      #    contents.checkRecord(false);
+      #    contents.setTmpData(contentsItem);
+      #
+      #    super();
+      #}
+    ENDSOURCE
+  ENDMETHODS
+  OBJECTBANK
+    PROPERTIES
+    ENDPROPERTIES
+    
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #Changes
+          Table               #SysVersionControlTmpChange
+          AllowEdit           #No
+          AllowCreate         #No
+          AllowDelete         #No
+          InsertAtEnd         #No
+          InsertIfEmpty       #No
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+        SOURCE #init
+          #public void init()
+          #{
+          #    super();
+          #    this.query().dataSourceTable(tablenum(SysVersionControlTmpChange)).addSortField(fieldnum(SysVersionControlTmpChange, ChangeNumber),SortOrder::Descending);
+          #}
+        ENDSOURCE
+      ENDMETHODS
+    ENDDATASOURCE
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #Contents
+          Table               #SysVersionControlTmpItem
+          AllowEdit           #No
+          AllowCreate         #No
+          AllowDelete         #No
+          JoinSource          #Changes
+          InsertAtEnd         #No
+          InsertIfEmpty       #No
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+      ENDMETHODS
+    ENDDATASOURCE
+  ENDOBJECTBANK
+  
+  REFERENCEDATASOURCES
+  ENDREFERENCEDATASOURCES
+  
+  JOINS
+    Contents Changes
+  ENDJOINS
+  
+  PARTREFERENCES
+  ENDPARTREFERENCES
+  
+  DESIGN
+    PROPERTIES
+      Caption             #@SYS69682
+      TitleDatasource     #Changes
+      WindowType          #Workspace
+      SetCompany          #No
+      ViewEditMode        #Edit
+    ENDPROPERTIES
+    
+    CONTAINER
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #ButtonGroup
+          ElementPosition     #1879048190
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GRID
+        PROPERTIES
+          Name                #Grid
+          AutoDeclaration     #Yes
+          Width               #Column width
+          Height              #Column height
+          VerticalSpacing     #4
+          ElementPosition     #1073741823
+          HierarchyParent     #OverviewTab
+          DataSource          #Changes
+          DataGroup           #ChangesHistoryGrid
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #ChangelistHeader
+          ElementPosition     #1073741823
+          HierarchyParent     #GeneralTab
+          DataSource          #Changes
+          Columns             #2
+          ArrangeGuide        
+            ARRAY INDEX Columns 
+              #0
+              #0
+            ENDARRAY
+          DataGroup           #ChangelistHeader
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #CommentGroup
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1610612734
+          HierarchyParent     #GeneralTab
+          DataSource          #Changes
+          AlignChild          #No
+          DataGroup           #Comment
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TAB
+        PROPERTIES
+          Name                #Tab
+          Width               #Column width
+          Height              #Column height
+          HelpText            #@SYS35017
+          ElementPosition     #1610612734
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #GeneralTab
+          ElementPosition     #1610612734
+          HierarchyParent     #Tab
+          Caption             #@SYS2952
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #OverviewTab
+          ElementPosition     #1073741823
+          HierarchyParent     #Tab
+          Caption             #@SYS9039
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #SysVersionControlChangeContents
+          ElementPosition     #1073741823
+          HierarchyParent     #ButtonGroup
+          MenuItemName        #SysVersionControlChangeContents
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #SysVersionControlTmpItem_Comment
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1073741823
+          HierarchyParent     #CommentGroup
+          MultiLine           #Yes
+          ShowLabel           #No
+          DataSource          #Changes
+          DataField           #Comment
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+    ENDCONTAINER
+    
+  ENDDESIGN
+  
+  PERMISSIONS #Permissions
+    PROPERTIES
+    ENDPROPERTIES
+    
+    PERMISSIONSET #Read
+      PROPERTIES
+      ENDPROPERTIES
+      
+      FORM #Controls
+      ENDFORM
+      
+    TABLES #Tables
+    ENDTABLES
+    
+  SERVERMETHODS #Server Methods
+  ENDSERVERMETHODS
+  
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Update
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Create
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Delete
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+ENDPERMISSIONS
+
+ENDFORM
+
+
+***Element: END
