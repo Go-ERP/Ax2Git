@@ -28,12 +28,12 @@ Formatversion: 1
   Parameters          #
   CountryRegionCodes  #
   ShortCut            #
-  CreatedBy           #-AOS-
-  CreationDate        #16/11/2012
-  CreationTime        #16:26:28
-  ChangedBy           #-AOS-
-  ChangedDate         #16/11/2012
-  ChangedTime         #16:26:28
+  CreatedBy           #Admin
+  CreationDate        #19/08/2013
+  CreationTime        #13:31:29
+  ChangedBy           #Admin
+  ChangedDate         #25/04/2014
+  ChangedTime         #11:59:44
   Origin              #{100E0000-0000-1000-FB09-5DBF82A26477}
 ENDPROPERTIES
 
@@ -655,6 +655,29 @@ ENDPROPERTIES
       ENDPROPERTIES
       
     ENDMENUITEM
+    MENU #Git
+      PROPERTIES
+        Name                #Git
+        Label               #Git
+      ENDPROPERTIES
+      
+      MENUITEM
+        PROPERTIES
+          Name                #Export AOT selection
+          MenuItemType        #Action
+          MenuItemName        #GitSysContextMenuExport
+        ENDPROPERTIES
+        
+      ENDMENUITEM
+      MENUITEM
+        PROPERTIES
+          Name                #Export by query
+          MenuItemType        #Action
+          MenuItemName        #GitSysContextMenuExportQuery
+        ENDPROPERTIES
+        
+      ENDMENUITEM
+    ENDMENU
   ENDMENU
   
 

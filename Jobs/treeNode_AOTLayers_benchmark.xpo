@@ -162,13 +162,20 @@ Formatversion: 1
     #        info(strFmt('%1', sysModelLayer.Layer));
     #    }
     #    stopWatch.Stop();
-    #    info(strFmt('Elapsed time: %1', CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds())));
+    #    info(strFmt('Elapsedd time: %1', CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds())));
     #
     #}
   ENDSOURCE
   PROPERTIES
-    Origin              #{1D9AF067-02E5-4B54-ACD3-22EABAC1A155}
-  ENDPROPERTIES
-  
+  Name                #treeNode_AOTLayers_benchmark
+  CreatedBy           #Admin
+  CreationDate        #18/04/2014
+  CreationTime        #19:29:25
+  ChangedBy           #bmindaug
+  ChangedDate         #12/09/2014
+  ChangedTime         #17:06:58
+  Origin              #{1111F067-02E5-4B54-ACD3-22EABAC1A155}
+ENDPROPERTIES
+
 
 ***Element: END

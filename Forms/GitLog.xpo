@@ -9,10 +9,19 @@ FRMVERSION 12
 
 FORM #GitLog
   PROPERTIES
-    Name                #GitLog
-    Origin              #{DCBA1B0B-EDE1-4AC1-B5ED-57E53DE37DC6}
-  ENDPROPERTIES
-  
+  Name                #GitLog
+  FormTemplate        #None
+  InteractionClass    #
+  AllowPreLoading     #Yes
+  CreatedBy           #bmind
+  CreationDate        #12/09/2014
+  CreationTime        #08:03:42
+  ChangedBy           #bmind
+  ChangedDate         #12/09/2014
+  ChangedTime         #18:26:50
+  Origin              #{DCBA1B0B-EDE1-4AC1-B5ED-57E53DE37DC6}
+ENDPROPERTIES
+
   METHODS
     SOURCE #classDeclaration
       #public class FormRun extends ObjectRun

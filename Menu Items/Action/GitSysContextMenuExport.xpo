@@ -10,14 +10,62 @@ Formatversion: 1
   MENUITEM #GitSysContextMenuExport
     Type: 3
     PROPERTIES
-      Name                #GitSysContextMenuExport
-      Label               #Export AOT selection
-      ObjectType          #Class
-      Object              #GitSysContextMenuExport
-      Parameters          #Type=AOT
-      Origin              #{6AB921DF-AE99-4DBF-95E0-E928460F219B}
-    ENDPROPERTIES
-    
+  Name                #GitSysContextMenuExport
+  Label               #Export AOT selection
+  HelpText            #
+  ObjectType          #Class
+  Object              #GitSysContextMenuExport
+  ReportDesign        #
+  Parameters          #Type=AOT
+  EnumTypeParameter   #
+  EnumParameter       #
+  ReadPermissions     #Auto
+  UpdatePermissions   #Auto
+  CreatePermissions   #Auto
+  CorrectPermissions  #Auto
+  DeletePermissions   #Auto
+  LinkedPermissionType #Auto
+  LinkedPermissionObject  #
+  LinkedPermissionObjectChild       #
+  RunOn               #Called from
+  ConfigurationKey    #
+  CountryConfigurationkey   #
+  WebConfigurationkey #
+  SecurityKey         #
+  NeededAccessLevel   #View
+  ExtendedDataSecurity #No
+  ViewUserLicense     #None
+  MaintainUserLicense #None
+  MultiSelect         #No
+  Class               #Form
+  Web                 #
+  WebAccess           #All
+  WebSecureTransaction #No
+  WebPage             #
+  NormalImage         #
+  NormalResource      #0
+  ImageLocation       #File
+  DisabledImage       #
+  DisabledResource    #0
+  DisabledImageLocation #File
+  WebMenuItemType     #Url
+  WebMenuItemName     #
+  OpenMode            #Auto
+  CopyCallerQuery     #Auto
+  FormViewOption      #Auto
+  CountryRegionCodes  #
+  Query               #
+  NeedsRecord         #No
+  CreatedBy           #Admin
+  CreationDate        #30/10/2013
+  CreationTime        #13:24:42
+  ChangedBy           #Admin
+  ChangedDate         #24/04/2014
+  ChangedTime         #10:40:10
+  Origin              #{6AB921DF-AE99-4DBF-95E0-E928460F219B}
+ENDPROPERTIES
+
+ 
   ENDMENUITEM
   
 

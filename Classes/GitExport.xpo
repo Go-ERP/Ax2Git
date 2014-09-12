@@ -9,11 +9,21 @@ Formatversion: 1
   
   CLASS #GitExport
     PROPERTIES
-      Name                #GitExport
-      Extends             #RunBase
-      Origin              #{A0D4DFFB-BC7C-4CB8-AECC-8C4147577CBA}
-    ENDPROPERTIES
-    
+  ID                  #1034396
+  Name                #GitExport
+  Extends             #RunBase
+  RunOn               #Called from
+  CreatedBy           #Admin
+  CreationDate        #30/10/2013
+  CreationTime        #13:24:41
+  ChangedBy           #Admin
+  ChangedDate         #24/04/2014
+  ChangedTime         #17:23:52
+  Origin              #{A0D4DFFB-BC7C-4CB8-AECC-8C4147577CBA}
+  LegacyId            #0
+ENDPROPERTIES
+
+ 
     METHODS
       SOURCE #buildNodeMap
         #protected void buildNodeMap(TreeNode _treeNode)
@@ -33,14 +43,6 @@ Formatversion: 1
         #    else // Project, group, etc.
         #    {
         #        setPrefix(_treeNode.treeNodeName());
-        #
-        #        // TODO: Export project definition:
-        #        if (exportProjDef && GitExport::nodeIsProject(_treeNode))
-        #        {
-        #            layerSet = GitExport::treeNodeAOTLayers(_treeNode);
-        #            nodeMap.insert(_treeNode, layerSet);
-        #            layersInUse = Set::union(layersInUse, layerSet);
-        #        }
         #
         #        // Traverse the tree recursively:
         #        treeNodeIterator = _treeNode.AOTiterator();
@@ -194,6 +196,11 @@ Formatversion: 1
         #            this.exportMap(layer);
         #        }
         #
+        #        if (layer == currentAOLayer())
+        #        {
+        #            this.exportProjectDefinition(rootNode);
+        #        }
+        #
         #        progress.setCount(0, 2);
         #        progress.setText('', 2);
         #
@@ -277,6 +284,15 @@ Formatversion: 1
         #    }
         #}
       ENDSOURCE
+      SOURCE #exportProjectDefinition
+        #private void exportProjectDefinition(TreeNode _treeNode)
+        #{
+        #    if (_treeNode && GitExport::nodeIsProject(_treeNode))
+        #    {
+        #        GitExport::exportNode(_treeNode, currentAOLayer(), GitExportLayers::TopLayer, repoPath, #expProjectOnly);
+        #    }
+        #}
+      ENDSOURCE
       SOURCE #getFromDialog
         #public boolean getFromDialog()
         #{
@@ -319,6 +335,12 @@ Formatversion: 1
         #    rootNode = _rootNode;
         #
         #    return rootNode;
+        #}
+      ENDSOURCE
+      SOURCE #postExport
+        #private void postExport(str _fullPath)
+        #{
+        #    //GitExport::removeExportComment(_fullPath);
         #}
       ENDSOURCE
       SOURCE #processNode_x
@@ -376,12 +398,8 @@ Formatversion: 1
         #
         #    nodeMapEnumerator = nodeMap.getEnumerator();
         #
-        #    rootNode.treeNodeRelease();
-        #    rootNode = null;
-        #info(strFmt('Nodes: %1', nodeMap.elements()));
         #
-        #//    repoPath     = formRun.getPath();
-        #//    exportLayers = formRun.getExportLayers();
+        #info(strFmt('Nodes: %1', nodeMap.elements()));
         #
         #    if (exportLayers == GitExportLayers::AllLayers)
         #    {
@@ -389,22 +407,18 @@ Formatversion: 1
         #    }
         #    else
         #    {
-        #//        exportProjDef = formRun.getExportProjDef();
-        #
-        #//        checkoutBranch = formRun.getCheckoutBranch();
         #        if (checkoutBranch)
         #        {
         #            Git::checkout(repoPath, branch);
         #        }
         #
-        #//        exportLayer = formRun.getLayer();
-        #
         #        if (exportLayers == GitExportLayers::CurrentLayer)
         #            parmLayer = currentAOLayer();
         #
-        #       this.exportMap(parmLayer);
+        #        this.exportMap(parmLayer);
         #
-        #//        commit = formRun.getCommit();
+        #        this.exportProjectDefinition(rootNode);
+        #
         #        if (commit)
         #        {
         #            if (commitInteractive)
@@ -417,6 +431,9 @@ Formatversion: 1
         #            }
         #        }
         #    }
+        #
+        #    rootNode.treeNodeRelease();
+        #    rootNode = null;
         #
         #    endLengthyOperation();
         #}
@@ -459,7 +476,7 @@ Formatversion: 1
         #    TreeNode        _treeNode,
         #    UtilEntryLevel  _layer,
         #    GitExportLayers _exportLayers,
-        #    FilePath         _repoPath,
+        #    FilePath        _repoPath,
         #    int             _exportFlag = #export)
         #{
         #    str     subPath;
@@ -476,10 +493,16 @@ Formatversion: 1
         #    lastSlashPos = strScan(subPath, '\\', strLen(subPath), -strLen(subPath));
         #    subPath = subStr(subPath, 1, lastSlashPos-1);
         #
-        #    if (!GitExport::folderCheckCreate(_repoPath + subPath))
-        #        throw error("could not create path " + _repoPath + subPath);
+        #    // Add sub-folder named after the current user to the Private projects folder tree:
+        #    if (GitExport::nodeIsProject(_treeNode) && strEndsWith(subPath, 'Private'))
+        #    {
+        #        subPath +=  '\\' + curUserId();
+        #    }
         #
-        #    fullPath = strFmt("%1%2\\%3.xpo", _repoPath, subPath, _treeNode.treeNodeName());
+        #    if (!GitExport::folderCheckCreate(_repoPath + subPath))
+        #        throw error('could not create path ' + _repoPath + subPath);
+        #
+        #    fullPath = strFmt('%1%2\\%3.xpo', _repoPath, subPath, _treeNode.treeNodeName());
         #//    if (exportLayers == GitExportLayers::SelectedLayer || exportLayers == GitExportLayers::CurrentLayer)
         #//        info(strFmt("%1 (%2)", fullPath, exportLayer));
         #//    else
@@ -495,7 +518,8 @@ Formatversion: 1
         #        else
         #            _treeNode.treeNodeExport(fullPath, _exportFlag);
         #
-        #        GitExport::removeExportComment(fullPath);
+        #        //TDOO: this.postExport(fullPath);
+        #        GitExport::removeExportComment(_treeNode, fullPath);
         #    }
         #
         #    //_treeNode.treeNodeRelease();
@@ -560,37 +584,49 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #removeExportComment
-        #static void removeExportComment(str  _fullPath)
-        #/*
-        #    Every XPO file contains these lines (language depends on user settings!):
+        #static void removeExportComment(
+        #    TreeNode    _treeNode,
+        #    str         _fullPath)
         #
-        #; Microsoft Business Solutions-Axapta Class: GitExport unloaded
-        #; --------------------------------------------------------------------------------
-        #
-        #    Must be removed to prevent committing of false modifications.
-        #*/
         #{
         #    #define.encoding(FileEncoding::UTF8)
         #
         #    TextBuffer  textBuffer;
-        #    int         findPos;
+        #    int         startPos;
         #    int         endPos;
-        #    int         len;
-        #    ;
         #
         #    new FileIoPermission(_fullPath,'w').assert();
         #    textBuffer = new TextBuffer();
         #
         #    if (! textBuffer.fromFile(_fullPath, #encoding))
-        #        throw error(strFmt("Failed loading file %1", _fullPath));
+        #        throw error(strFmt('Failed loading file %1', _fullPath));
         #
-        #    textBuffer.find("\n; ", 0);                     // find first comment line
-        #    findPos = textBuffer.matchPos();
+        #    /*
+        #        Every XPO file contains these lines (language depends on user settings!):
         #
-        #    textBuffer.find("\n", findPos+1);               // find end of comment line
+        #    ; Microsoft Business Solutions-Axapta Class: GitExport unloaded
+        #    ; --------------------------------------------------------------------------------
+        #
+        #        Must be removed to prevent committing of false modifications.
+        #    */
+        #    textBuffer.find('\n; ', 0);                     // find first comment line
+        #    startPos = textBuffer.matchPos();
+        #
+        #    textBuffer.find('\n', startPos+1);               // find end of comment line
         #    endPos = textBuffer.matchPos();
         #
-        #    textBuffer.delete(findPos+3, endPos-findPos-3); // remove comment, leaving blank line
+        #    textBuffer.delete(startPos+3, endPos-startPos-3); // remove comment, leaving blank line
+        #
+        #    // For some reason PROPERTIES section in XPO file does not contain all the properties found on the tree node.
+        #    // Replace it with full list of properties
+        #    textBuffer.find('PROPERTIES', endPos);                     // find start of section
+        #    startPos = textBuffer.matchPos();
+        #
+        #    textBuffer.find('ENDPROPERTIES', startPos);               // find end of section
+        #    endPos = textBuffer.matchPos();
+        #
+        #    textBuffer.delete(startPos, endPos-startPos+strLen('ENDPROPERTIES')+4);
+        #    textBuffer.insert(_treeNode.AOTgetProperties(), startPos);
         #
         #    textBuffer.toFile(_fullPath, #encoding);
         #
@@ -667,7 +703,6 @@ Formatversion: 1
         #    TreeNodePath        treeNodePath;
         #    TreeNodeName        treeNodeName;
         #    int                 lastSlashPos;
-        #
         #    Set                 ret = new Set(Types::Integer);
         #
         #    treeNodePathFull = _treeNode.treeNodePath();
@@ -681,7 +716,7 @@ Formatversion: 1
         #        treeNodePath = @'\Data dictionary\Tables';
         #    }
         #
-        #    select firstOnly1 sysModelElement_Root
+        #    select firstOnly sysModelElement_Root
         #        where sysModelElement_Root.Name == treeNodeName
         #           && sysModelElement_Root.RootModelElement == sysModelElement_Root.RecId
         #           && !sysModelElement_Root.ParentId
