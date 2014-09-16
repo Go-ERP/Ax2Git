@@ -24,7 +24,7 @@ Formatversion: 1
         #
         #    if (GitExport::nodeIsExportable(_treeNode, exportLayers))
         #    {
-        #        //nodeMap.insert(_treeNode, _treeNode.AOTLayers()); // This does NOT return all layers
+        #        //nodeMap.insert(_treeNode, _treeNode.AOTLayers()); // _treeNode.AOTLayers() does NOT return all layers!
         #        layerSet = GitExport::treeNodeAOTLayers(_treeNode);
         #        nodeMap.insert(_treeNode, layerSet);
         #        layersInUse = Set::union(layersInUse, layerSet);
@@ -33,14 +33,6 @@ Formatversion: 1
         #    else // Project, group, etc.
         #    {
         #        setPrefix(_treeNode.treeNodeName());
-        #
-        #        // TODO: Export project definition:
-        #        if (exportProjDef && GitExport::nodeIsProject(_treeNode))
-        #        {
-        #            layerSet = GitExport::treeNodeAOTLayers(_treeNode);
-        #            nodeMap.insert(_treeNode, layerSet);
-        #            layersInUse = Set::union(layersInUse, layerSet);
-        #        }
         #
         #        // Traverse the tree recursively:
         #        treeNodeIterator = _treeNode.AOTiterator();
@@ -75,8 +67,8 @@ Formatversion: 1
         #    #AotExport
         #    #AviFiles
         #
-        #    System.Diagnostics.Stopwatch stopWatch; ////TODO: overall timer, avg. time per node
-        #                                        ///
+        #    System.Diagnostics.Stopwatch stopWatch; //TODO: overall timer, avg. time per node
+        #
         #    TreeNode                rootNode;
         #    FilePath                repoPath;
         #    NoYes                   synchronize;
@@ -115,20 +107,8 @@ Formatversion: 1
       SOURCE #dialogPostRun
         #public void dialogPostRun(DialogRunbase dialog)
         #{
-        # //   Object  formRun = dialog.formRun();
-        #
         #    dialogFormRun = dialog.formRun();
-        #/*
-        #    repoPath            = formRun.getPath();
-        #    exportProjDef       = formRun.getExportProjDef();
-        #    checkoutBranch      = formRun.getCheckoutBranch();
-        #    branch              = formRun.getBranch();
-        #    exportLayers        = formRun.getExportLayers();
-        #    parmLayer           = formRun.getLayer();
-        #    commit              = formRun.getCommit();
-        #    commitInteractive   = formRun.getCommitInteractive();
-        #    commitMessage       = formRun.getCommitMessage();
-        #*/
+        #
         #    super(dialog);
         #}
       ENDSOURCE
@@ -178,7 +158,7 @@ Formatversion: 1
         #                Git::resolveInteractive(repoPath);
         #                Git::mergeInteractive(repoPath);
         #
-        #                if (Box::yesNo("Were the conflicts resolved? \nDo you want to proceed?", DialogButton::Yes) != DialogButton::Yes)
+        #                if (Box::yesNo('Were the conflicts resolved? \nDo you want to proceed?' , DialogButton::Yes) != DialogButton::Yes)
         #                    break;
         #
         #                if (foregroundHwnd)
@@ -192,6 +172,11 @@ Formatversion: 1
         #        if (synchronize || layersInUse.in(layer))
         #        {
         #            this.exportMap(layer);
+        #        }
+        #
+        #        if (layer == currentAOLayer())
+        #        {
+        #            this.exportProjectDefinition(rootNode);
         #        }
         #
         #        progress.setCount(0, 2);
@@ -277,6 +262,17 @@ Formatversion: 1
         #    }
         #}
       ENDSOURCE
+      SOURCE #exportProjectDefinition
+        #private void exportProjectDefinition(TreeNode _treeNode)
+        #{
+        #    if (exportProjDef &&
+        #        _treeNode &&
+        #        GitExport::nodeIsProject(_treeNode))
+        #    {
+        #        GitExport::exportNode(_treeNode, currentAOLayer(), GitExportLayers::TopLayer, repoPath, #expProjectOnly);
+        #    }
+        #}
+      ENDSOURCE
       SOURCE #getFromDialog
         #public boolean getFromDialog()
         #{
@@ -298,7 +294,7 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #new
-        #void new()
+        #public void new()
         #{
         #    super();
         #
@@ -321,49 +317,13 @@ Formatversion: 1
         #    return rootNode;
         #}
       ENDSOURCE
-      SOURCE #processNode_x
-        #void processNode_x(TreeNode _treeNode)
-        #{
-        #    /*
-        #    TreeNodeIterator    treeNodeIterator;
-        #    TreeNode            childNode;
-        #
-        #    //depth ++;
-        #
-        #    if (GitExport::nodeIsExportable(_treeNode, exportLayers, exportLayer))
-        #    {
-        #        this.exportNode(_treeNode);
-        #    }
-        #    else // Project, group, etc.
-        #    {
-        #        setPrefix(_treeNode.treeNodeName());
-        #
-        #        // Export project definition:
-        #        if (exportProjDef && GitExport::nodeIsProject(_treeNode))
-        #        {
-        #            this.exportNode(_treeNode, #export + #expProjectOnly);
-        #        }
-        #
-        #        // Traverse the tree recursively:
-        #        treeNodeIterator = _treeNode.AOTiterator();
-        #        childNode        = treeNodeIterator.next();
-        #
-        #        while (childNode)
-        #        {
-        #            this.processNode(childNode);
-        #            childNode = treeNodeIterator.next();
-        #        }
-        #    }
-        #    */
-        #}
-      ENDSOURCE
       SOURCE #run
         #void run()
         #{
         #
         #    startLengthyOperation();
         #
-        #    this.progressInit(strFmt("Exporting to %1", repoPath), 0, #AviUpdate, 2);
+        #    this.progressInit(strFmt('Exporting to %1', repoPath), 0, #AviUpdate, 2);
         #
         #    progress.setText('Loading...', 1);
         #
@@ -376,12 +336,8 @@ Formatversion: 1
         #
         #    nodeMapEnumerator = nodeMap.getEnumerator();
         #
-        #    rootNode.treeNodeRelease();
-        #    rootNode = null;
-        #info(strFmt('Nodes: %1', nodeMap.elements()));
         #
-        #//    repoPath     = formRun.getPath();
-        #//    exportLayers = formRun.getExportLayers();
+        #//info(strFmt('Nodes: %1', nodeMap.elements()));
         #
         #    if (exportLayers == GitExportLayers::AllLayers)
         #    {
@@ -389,22 +345,18 @@ Formatversion: 1
         #    }
         #    else
         #    {
-        #//        exportProjDef = formRun.getExportProjDef();
-        #
-        #//        checkoutBranch = formRun.getCheckoutBranch();
         #        if (checkoutBranch)
         #        {
         #            Git::checkout(repoPath, branch);
         #        }
         #
-        #//        exportLayer = formRun.getLayer();
-        #
         #        if (exportLayers == GitExportLayers::CurrentLayer)
         #            parmLayer = currentAOLayer();
         #
-        #       this.exportMap(parmLayer);
+        #        this.exportMap(parmLayer);
         #
-        #//        commit = formRun.getCommit();
+        #        this.exportProjectDefinition(rootNode);
+        #
         #        if (commit)
         #        {
         #            if (commitInteractive)
@@ -417,6 +369,9 @@ Formatversion: 1
         #            }
         #        }
         #    }
+        #
+        #    rootNode.treeNodeRelease();
+        #    rootNode = null;
         #
         #    endLengthyOperation();
         #}
@@ -455,11 +410,11 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #exportNode
-        #static void exportNode(
+        #private static void exportNode(
         #    TreeNode        _treeNode,
         #    UtilEntryLevel  _layer,
         #    GitExportLayers _exportLayers,
-        #    FilePath         _repoPath,
+        #    FilePath        _repoPath,
         #    int             _exportFlag = #export)
         #{
         #    str     subPath;
@@ -476,10 +431,16 @@ Formatversion: 1
         #    lastSlashPos = strScan(subPath, '\\', strLen(subPath), -strLen(subPath));
         #    subPath = subStr(subPath, 1, lastSlashPos-1);
         #
-        #    if (!GitExport::folderCheckCreate(_repoPath + subPath))
-        #        throw error("could not create path " + _repoPath + subPath);
+        #    // Add sub-folder named after the current user to the Private projects folder tree
+        #    if (GitExport::nodeIsProject(_treeNode) && strEndsWith(subPath, 'Private'))
+        #    {
+        #        subPath +=  '\\' + curUserId();
+        #    }
         #
-        #    fullPath = strFmt("%1%2\\%3.xpo", _repoPath, subPath, _treeNode.treeNodeName());
+        #    if (!GitExport::folderCheckCreate(_repoPath + subPath))
+        #        throw error('could not create path ' + _repoPath + subPath);
+        #
+        #    fullPath = strFmt('%1%2\\%3.xpo', _repoPath, subPath, _treeNode.treeNodeName());
         #//    if (exportLayers == GitExportLayers::SelectedLayer || exportLayers == GitExportLayers::CurrentLayer)
         #//        info(strFmt("%1 (%2)", fullPath, exportLayer));
         #//    else
@@ -495,7 +456,7 @@ Formatversion: 1
         #        else
         #            _treeNode.treeNodeExport(fullPath, _exportFlag);
         #
-        #        GitExport::removeExportComment(fullPath);
+        #        GitExport::postExport(_treeNode, fullPath);
         #    }
         #
         #    //_treeNode.treeNodeRelease();
@@ -559,38 +520,125 @@ Formatversion: 1
         #    return (_treeNode && _treeNode is ProjectNode);
         #}
       ENDSOURCE
-      SOURCE #removeExportComment
-        #static void removeExportComment(str  _fullPath)
-        #/*
-        #    Every XPO file contains these lines (language depends on user settings!):
+      SOURCE #postExport
+        #static void postExport(
+        #    TreeNode    _treeNode,
+        #    str         _fullPath)
+        #{
+        #    System.Text.UTF8Encoding    encoding = new System.Text.UTF8Encoding(true, true);
+        #    System.IO.StreamReader      streamReader;
+        #    System.IO.StreamWriter      streamWriter;
+        #    System.String               text;
         #
-        #; Microsoft Business Solutions-Axapta Class: GitExport unloaded
-        #; --------------------------------------------------------------------------------
+        #    //str                                             pattern;
+        #    //str                                             propertiesStr;
+        #    //System.Text.RegularExpressions.Regex            regEx;
+        #    //System.Text.RegularExpressions.Match            regExMatch;
+        #    //System.Text.RegularExpressions.MatchCollection  regExMatchCollection;
         #
-        #    Must be removed to prevent committing of false modifications.
-        #*/
+        #    streamReader = new System.IO.StreamReader(_fullPath, encoding);
+        #    text          = streamReader.ReadToEnd();
+        #    streamReader.Close();
+        #
+        #    // Remove comment line which depend on user settings and may trigger false changes in XPO files
+        #    text = System.Text.RegularExpressions.Regex::Replace(text, '; [A-Z].*\r\n', '; \r\n');
+        #
+        #
+        #    // Replace standard PROPERTIES section with full set of properties, including read-only ones
+        #
+        #    /* CONFLICTS with xpo export workaround: each export changes ChangedTime resulting in false diffs
+        #    pattern = '(\r\n  PROPERTIES\r\n(.|\r\n)+?\r\n  ENDPROPERTIES\r\n){1}?';
+        #
+        #    regEx = new System.Text.RegularExpressions.Regex(pattern, System.Text.RegularExpressions.RegexOptions::Singleline);
+        #    regExMatchCollection = regEx.Matches(text);
+        #    regExMatch = regExMatchCollection.get_Item(0);
+        #
+        #    propertiesStr = _treeNode.AOTgetProperties();
+        #    propertiesStr = System.Text.RegularExpressions.Regex::Replace(propertiesStr, '\n$', '');      // Remove trailing \n
+        #    propertiesStr = System.Text.RegularExpressions.Regex::Replace(propertiesStr, '\n', '\r\n  '); // Fix CR and increse indent
+        #    propertiesStr = '\r\n  ' + propertiesStr + '\r\n';
+        #
+        #    text = text.Replace(regExMatch.get_Value(), propertiesStr);
+        #
+        #    // Incorrect - replaces ALL occurrences of PROPERTIES. Probably can be solved by tuning regex pattern
+        #    //text = System.Text.RegularExpressions.Regex::Replace(
+        #        //text,
+        #        //pattern,
+        #        //propertiesStr,
+        #        //System.Text.RegularExpressions.RegexOptions::Singleline
+        #        //);
+        #    */
+        #
+        #    streamWriter = new System.IO.StreamWriter(_fullPath, false, encoding);
+        #    streamWriter.Write(text);
+        #    streamWriter.Close();
+        #}
+      ENDSOURCE
+      SOURCE #removeExportComment_DEL
+        #static void removeExportComment_DEL(
+        #    TreeNode    _treeNode,
+        #    str         _fullPath)
+        #
         #{
         #    #define.encoding(FileEncoding::UTF8)
         #
-        #    TextBuffer  textBuffer;
-        #    int         findPos;
+        #    TextBuffer                              textBuffer;
+        #    System.Text.RegularExpressions.Regex    regex;
+        #
+        #    int         startPos;
         #    int         endPos;
-        #    int         len;
-        #    ;
         #
         #    new FileIoPermission(_fullPath,'w').assert();
         #    textBuffer = new TextBuffer();
         #
         #    if (! textBuffer.fromFile(_fullPath, #encoding))
-        #        throw error(strFmt("Failed loading file %1", _fullPath));
+        #        throw error(strFmt('Failed loading file %1', _fullPath));
         #
-        #    textBuffer.find("\n; ", 0);                     // find first comment line
-        #    findPos = textBuffer.matchPos();
+        #    //textBuffer.regularExpressions(true);
+        #    regex = new System.Text.RegularExpressions.Regex('todo');
         #
-        #    textBuffer.find("\n", findPos+1);               // find end of comment line
+        #    textBuffer.setText(regex.Replace(textBuffer.getText(), 'todo'));
+        #
+        #    /*
+        #        Every XPO file contains these lines (language depends on user settings!):
+        #
+        #    ; 
+        #    ; --------------------------------------------------------------------------------
+        #
+        #        Must be removed to prevent committing of false modifications.
+        #    */
+        #    textBuffer.find('<;: :n+', 0);                     // find first comment line starting with '; 
+        #    startPos = textBuffer.matchPos();
+        #    endPos = startPos + textBuffer.matchLen();
+        #
+        #    textBuffer.find('<;: -', startPos+1);               // find end of comment line
         #    endPos = textBuffer.matchPos();
         #
-        #    textBuffer.delete(findPos+3, endPos-findPos-3); // remove comment, leaving blank line
+        #    textBuffer.delete(startPos+3, endPos-startPos-3); // remove comment, leaving blank line
+        #
+        #    // Standard Ax export does not export AOT objects' read-only properties, like "ChangedBy" or "ChangeDate".
+        #    // It might be useful to track changes in these properties also
+        #    // Replace it with full list of properties
+        #info(strFmt('%1',textBuffer.regularExpressions()));
+        #
+        #    if (textBuffer.find('<:SPACE+PROPERTIES>', 0))
+        #    {
+        #        startPos = textBuffer.matchPos();
+        #
+        #        if (textBuffer.find('ENDPROPERTIES\n', 0))
+        #        {
+        #        endPos = textBuffer.matchPos();
+        #info(textBuffer.subStr(startPos, endPos-startPos));
+        #    endPos += strLen('ENDPROPERTIES');
+        #info(textBuffer.subStr(startPos, endPos-startPos));
+        #    textBuffer.find('\n', endPos+2);
+        #    endPos = textBuffer.matchPos();
+        #info(textBuffer.subStr(startPos, endPos-startPos));
+        #
+        #    textBuffer.delete(startPos, endPos-startPos);
+        #    textBuffer.insert(_treeNode.AOTgetProperties(), startPos);
+        #        }
+        #    }
         #
         #    textBuffer.toFile(_fullPath, #encoding);
         #
@@ -655,7 +703,7 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #treeNodeAOTLayers
-        #static Set treeNodeAOTLayers(TreeNode _treeNode)
+        #public static Set treeNodeAOTLayers(TreeNode _treeNode)
         #{
         #    SysModelLayer       sysModelLayer;
         #    SysModelElement     sysModelElement_Root;
@@ -667,7 +715,6 @@ Formatversion: 1
         #    TreeNodePath        treeNodePath;
         #    TreeNodeName        treeNodeName;
         #    int                 lastSlashPos;
-        #
         #    Set                 ret = new Set(Types::Integer);
         #
         #    treeNodePathFull = _treeNode.treeNodePath();
@@ -681,18 +728,18 @@ Formatversion: 1
         #        treeNodePath = @'\Data dictionary\Tables';
         #    }
         #
-        #    select firstOnly1 sysModelElement_Root
+        #    select firstOnly RecId from sysModelElement_Root
         #        where sysModelElement_Root.Name == treeNodeName
         #           && sysModelElement_Root.RootModelElement == sysModelElement_Root.RecId
         #           && !sysModelElement_Root.ParentId
-        #    join sysModelElementType
+        #    exists join sysModelElementType
         #        where sysModelElementType.RecId == sysModelElement_Root.ElementType
         #           && sysModelElementType.TreeNodeName == treeNodePath;
         #
-        #    while select sysModelElement
+        #    while select RecId from sysModelElement
         #        where (!sysModelElement.RootModelElement && sysModelElement.RecId            == sysModelElement_Root.RecId) // the root element itself
         #           || ( sysModelElement.RootModelElement && sysModelElement.RootModelElement == sysModelElement_Root.RecId) // or any sub-element
-        #    join sysModelElementData
+        #    join Layer from sysModelElementData
         #        where sysModelElementData.ModelElement == sysModelElement.RecId
         #    join sysModelLayer
         #        group by Layer
