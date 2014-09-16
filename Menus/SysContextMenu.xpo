@@ -9,35 +9,12 @@ Formatversion: 1
   
   MENU #SysContextMenu
     PROPERTIES
-  Name                #SysContextMenu
-  Label               #@SYS28637
-  ConfigurationKey    #
-  SecurityKey         #SysDevelopment
-  NeededAccessLevel   #View
-  ShowParentModule    #Yes
-  SetCompany          #No
-  WebTarget           #
-  NormalImage         #
-  NormalResource      #0
-  ImageLocation       #File
-  DisabledImage       #
-  DisabledResource    #0
-  DisabledImageLocation #File
-  MenuItemType        #Display
-  MenuItemName        #
-  Parameters          #
-  CountryRegionCodes  #
-  ShortCut            #
-  CreatedBy           #Admin
-  CreationDate        #19/08/2013
-  CreationTime        #13:31:29
-  ChangedBy           #Admin
-  ChangedDate         #25/04/2014
-  ChangedTime         #11:59:44
-  Origin              #{100E0000-0000-1000-FB09-5DBF82A26477}
-ENDPROPERTIES
-
- 
+      Name                #SysContextMenu
+      Label               #@SYS28637
+      SecurityKey         #SysDevelopment
+      Origin              #{100E0000-0000-1000-FB09-5DBF82A26477}
+    ENDPROPERTIES
+    
     MENUITEM
       PROPERTIES
         Name                #Compare existing code to proposed fix

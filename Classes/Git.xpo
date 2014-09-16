@@ -9,21 +9,10 @@ Formatversion: 1
   
   CLASS #Git
     PROPERTIES
-  ID                  #1034395
-  Name                #Git
-  Extends             #
-  RunOn               #Called from
-  CreatedBy           #Admin
-  CreationDate        #30/10/2013
-  CreationTime        #13:24:41
-  ChangedBy           #Admin
-  ChangedDate         #30/10/2013
-  ChangedTime         #13:24:41
-  Origin              #{DC2A41E3-EB15-4FDF-8C2B-5EC1B19E8FCF}
-  LegacyId            #0
-ENDPROPERTIES
-
- 
+      Name                #Git
+      Origin              #{DC2A41E3-EB15-4FDF-8C2B-5EC1B19E8FCF}
+    ENDPROPERTIES
+    
     METHODS
       SOURCE #classDeclaration
         #class Git
@@ -40,7 +29,16 @@ ENDPROPERTIES
       SOURCE #checkout
         #public static str checkout(str _repository, str _branch)
         #{
-        #    return Git::executeCommand(_repository, 'checkout ' + _branch);
+        #    container branches = Git::getBranches(_repository);
+        #
+        #    if (conFind(branches, _branch))
+        #    {
+        #        return Git::executeCommand(_repository, 'checkout ' + _branch);
+        #    }
+        #    else
+        #    {
+        #        return Git::executeCommand(_repository, 'checkout -b ' + _branch);
+        #    }
         #}
       ENDSOURCE
       SOURCE #commit

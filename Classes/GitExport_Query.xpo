@@ -9,21 +9,11 @@ Formatversion: 1
   
   CLASS #GitExport_Query
     PROPERTIES
-  ID                  #1034759
-  Name                #GitExport_Query
-  Extends             #GitExport
-  RunOn               #Called from
-  CreatedBy           #Admin
-  CreationDate        #15/04/2014
-  CreationTime        #20:22:59
-  ChangedBy           #Admin
-  ChangedDate         #28/04/2014
-  ChangedTime         #11:12:33
-  Origin              #{E56F96EE-0828-49E5-AB04-B147E65664FF}
-  LegacyId            #0
-ENDPROPERTIES
-
- 
+      Name                #GitExport_Query
+      Extends             #GitExport
+      Origin              #{E56F96EE-0828-49E5-AB04-B147E65664FF}
+    ENDPROPERTIES
+    
     METHODS
       SOURCE #buildNodeMap
         #protected void buildNodeMap(TreeNode _treeNode)

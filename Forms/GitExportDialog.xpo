@@ -9,19 +9,10 @@ FRMVERSION 12
 
 FORM #GitExportDialog
   PROPERTIES
-  Name                #GitExportDialog
-  FormTemplate        #None
-  InteractionClass    #
-  AllowPreLoading     #Yes
-  CreatedBy           #Admin
-  CreationDate        #30/10/2013
-  CreationTime        #13:24:42
-  ChangedBy           #Admin
-  ChangedDate         #12/09/2014
-  ChangedTime         #18:26:48
-  Origin              #{373D90E1-3667-4309-92DA-A15B787BACA0}
-ENDPROPERTIES
-
+    Name                #GitExportDialog
+    Origin              #{373D90E1-3667-4309-92DA-A15B787BACA0}
+  ENDPROPERTIES
+  
   METHODS
     SOURCE #classDeclaration
       #class FormRun extends ObjectRun

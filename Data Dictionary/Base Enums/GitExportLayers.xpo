@@ -9,27 +9,12 @@ Formatversion: 1
   
   ENUMTYPE #GitExportLayers
     PROPERTIES
-  ID                  #101855
-  Name                #GitExportLayers
-  Label               #Export layers
-  Help                #
-  DisplayLength       #Auto
-  Style               #Combo box
-  ConfigurationKey    #
-  AnalysisUsage       #None
-  UseEnumValue        #Yes
-  CountryRegionCodes  #
-  CreatedBy           #Admin
-  CreationDate        #30/10/2013
-  CreationTime        #13:24:41
-  ChangedBy           #Admin
-  ChangedDate         #23/04/2014
-  ChangedTime         #15:25:31
-  Origin              #{57D381CE-6FFE-473E-A123-A138E999C6A2}
-  LegacyId            #0
-ENDPROPERTIES
-
- 
+      Name                #GitExportLayers
+      Label               #Export layers
+      UseEnumValue        #Yes
+      Origin              #{57D381CE-6FFE-473E-A123-A138E999C6A2}
+    ENDPROPERTIES
+    
     TYPEELEMENTS
       #TopLayer
       PROPERTIES

@@ -10,16 +10,10 @@ Formatversion: 1
   PROJECT #Git
   SHARED
   PROPERTIES
-  Name                #Git
-  CreatedBy           #Admin
-  CreationDate        #30/10/2013
-  CreationTime        #13:24:42
-  ChangedBy           #bmindaug
-  ChangedDate         #12/09/2014
-  ChangedTime         #18:20:51
-  Origin              #{5C23D995-045C-4FCD-A2DD-3B283E7AD36F}
-ENDPROPERTIES
-
+    Name                #Git
+    Origin              #{5C23D995-045C-4FCD-A2DD-3B283E7AD36F}
+  ENDPROPERTIES
+  
     PROJECTCLASS ProjectNode
     GROUP #REF
       PROPERTIES
@@ -203,6 +197,18 @@ ENDPROPERTIES
         PreventEditProperties #No
       ENDPROPERTIES
       
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 5
+        NODETYPE 215
+        NAME #Job38
+      ENDNODE
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 5
+        NODETYPE 215
+        NAME #Job37
+      ENDNODE
       BEGINNODE
         FILETYPE 0
         UTILTYPE 5

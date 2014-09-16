@@ -9,21 +9,12 @@ Formatversion: 1
   
   CLASS #GitSysContextMenuExport
     PROPERTIES
-  ID                  #1034397
-  Name                #GitSysContextMenuExport
-  Extends             #SysContextMenu
-  RunOn               #Client
-  CreatedBy           #Admin
-  CreationDate        #30/10/2013
-  CreationTime        #13:24:41
-  ChangedBy           #Admin
-  ChangedDate         #30/10/2013
-  ChangedTime         #13:24:41
-  Origin              #{A2D1A3A7-06EA-464B-94F1-AD1661738960}
-  LegacyId            #0
-ENDPROPERTIES
-
- 
+      Name                #GitSysContextMenuExport
+      Extends             #SysContextMenu
+      RunOn               #Client
+      Origin              #{A2D1A3A7-06EA-464B-94F1-AD1661738960}
+    ENDPROPERTIES
+    
     METHODS
       SOURCE #classDeclaration
         #/*
