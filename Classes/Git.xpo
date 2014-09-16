@@ -29,7 +29,16 @@ Formatversion: 1
       SOURCE #checkout
         #public static str checkout(str _repository, str _branch)
         #{
-        #    return Git::executeCommand(_repository, 'checkout ' + _branch);
+        #    container branches = Git::getBranches(_repository);
+        #
+        #    if (conFind(branches, _branch))
+        #    {
+        #        return Git::executeCommand(_repository, 'checkout ' + _branch);
+        #    }
+        #    else
+        #    {
+        #        return Git::executeCommand(_repository, 'checkout -b ' + _branch);
+        #    }
         #}
       ENDSOURCE
       SOURCE #commit
