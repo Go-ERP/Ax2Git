@@ -1,0 +1,223 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: PRN
+
+; 
+; --------------------------------------------------------------------------------
+  PROJECTVERSION 2
+  
+  PROJECT #Git
+  SHARED
+  PROPERTIES
+    Name                #Git
+    Origin              #{5C23D995-045C-4FCD-A2DD-3B283E7AD36F}
+  ENDPROPERTIES
+  
+    PROJECTCLASS ProjectNode
+    GROUP #REF
+      PROPERTIES
+        Name                #REF
+        ProjectGroupType    #All
+        GroupMask           #
+        PreventEditProperties #No
+      ENDPROPERTIES
+      
+      GROUP #Tables
+        PROPERTIES
+          Name                #Tables
+          ProjectGroupType    #Tables
+          GroupMask           #
+          PreventEditProperties #No
+        ENDPROPERTIES
+        
+        BEGINNODE
+          FILETYPE 0
+          UTILTYPE 44
+          NODETYPE 204
+          NAME #SysVersionControlTmpChange
+        ENDNODE
+        BEGINNODE
+          FILETYPE 0
+          UTILTYPE 44
+          NODETYPE 204
+          NAME #SysVersionControlTmpItem
+        ENDNODE
+        ENDGROUP
+        
+      GROUP #Forms
+        PROPERTIES
+          Name                #Forms
+          ProjectGroupType    #Forms
+          GroupMask           #
+          PreventEditProperties #No
+        ENDPROPERTIES
+        
+        BEGINNODE
+          FILETYPE 0
+          UTILTYPE 11
+          NODETYPE 201
+          NAME #SysVersionControlChangeContents
+        ENDNODE
+        BEGINNODE
+          FILETYPE 0
+          UTILTYPE 11
+          NODETYPE 201
+          NAME #SysVersionControlChangesHistory
+        ENDNODE
+        ENDGROUP
+        
+      ENDGROUP
+      
+    GROUP #BaseEnums
+      PROPERTIES
+        Name                #BaseEnums
+        ProjectGroupType    #BaseEnums
+        GroupMask           #
+        PreventEditProperties #No
+      ENDPROPERTIES
+      
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 40
+        NODETYPE 209
+        NAME #GitExportLayers
+      ENDNODE
+      ENDGROUP
+      
+    GROUP #Forms
+      PROPERTIES
+        Name                #Forms
+        ProjectGroupType    #Forms
+        GroupMask           #
+        PreventEditProperties #No
+      ENDPROPERTIES
+      
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 11
+        NODETYPE 201
+        NAME #GitExportDialog
+      ENDNODE
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 11
+        NODETYPE 201
+        NAME #GitLog
+      ENDNODE
+      ENDGROUP
+      
+    GROUP #Classes
+      PROPERTIES
+        Name                #Classes
+        ProjectGroupType    #Classes
+        GroupMask           #
+        PreventEditProperties #No
+      ENDPROPERTIES
+      
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 45
+        NODETYPE 329
+        NAME #Git
+      ENDNODE
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 45
+        NODETYPE 329
+        NAME #GitExport
+      ENDNODE
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 45
+        NODETYPE 329
+        NAME #GitExport_Query
+      ENDNODE
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 45
+        NODETYPE 329
+        NAME #GitSysContextMenuExport
+      ENDNODE
+      ENDGROUP
+      
+    GROUP #Menu Items
+      PROPERTIES
+        Name                #Menu Items
+        ProjectGroupType    #MenuItems
+        GroupMask           #
+        PreventEditProperties #No
+      ENDPROPERTIES
+      
+      GROUP #Action
+        PROPERTIES
+          Name                #Action
+          ProjectGroupType    #Action
+          GroupMask           #
+          PreventEditProperties #No
+        ENDPROPERTIES
+        
+        BEGINNODE
+          FILETYPE 0
+          UTILTYPE 3
+          NODETYPE 296
+          NAME #GitSysContextMenuExport
+        ENDNODE
+        BEGINNODE
+          FILETYPE 0
+          UTILTYPE 3
+          NODETYPE 296
+          NAME #GitSysContextMenuExportQuery
+        ENDNODE
+        ENDGROUP
+        
+      ENDGROUP
+      
+    GROUP #Menus
+      PROPERTIES
+        Name                #Menus
+        ProjectGroupType    #Menus
+        GroupMask           #
+        PreventEditProperties #No
+      ENDPROPERTIES
+      
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 16
+        NODETYPE 205
+        NAME #SysContextMenu
+      ENDNODE
+      ENDGROUP
+      
+    GROUP #Jobs
+      PROPERTIES
+        Name                #Jobs
+        ProjectGroupType    #Jobs
+        GroupMask           #
+        PreventEditProperties #No
+      ENDPROPERTIES
+      
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 5
+        NODETYPE 215
+        NAME #Job38
+      ENDNODE
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 5
+        NODETYPE 215
+        NAME #Job37
+      ENDNODE
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 5
+        NODETYPE 215
+        NAME #treeNode_AOTLayers_benchmark
+      ENDNODE
+      ENDGROUP
+      
+  ENDPROJECT
+  
+
+***Element: END

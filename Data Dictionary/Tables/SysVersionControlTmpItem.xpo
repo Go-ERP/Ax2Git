@@ -1,0 +1,808 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: DBT
+
+; 
+; --------------------------------------------------------------------------------
+  TABLEVERSION 1
+  
+  TABLE #SysVersionControlTmpItem
+    EnforceFKRelation 0
+    PROPERTIES
+  ID                  #1984
+  Name                #SysVersionControlTmpItem
+  Label               #@SYS85910
+  FormRef             #sysversionControlitemHistory
+  ListPageRef         #
+  ReportRef           #
+  PreviewPartRef      #
+  SearchLinkRefType   #Url
+  SearchLinkRefName   #
+  Table               #SysVersionControlTmpItem
+  TitleField1         #Version
+  TitleField2         #ItemPath
+  TableType           #InMemory
+  TableContents       #Not specified
+  Systemtable         #Yes
+  ConfigurationKey    #
+  SecurityKey         #
+  MaxAccessMode       #Delete
+  Visible             #Yes
+  AOSAuthorization    #None
+  CacheLookup         #None
+  CreateRecIdIndex    #No
+  SaveDataPerCompany  #No
+  SaveDataPerPartition #Yes
+  TableGroup          #Main
+  PrimaryIndex        #
+  ClusterIndex        #
+  ReplacementKey      #
+  IsLookup            #No
+  AnalysisDimensionType #Auto
+  AnalysisIdentifier  #
+  SingularLabel       #
+  ModifiedDateTime    #No
+  DEL_modifiedTime    #No
+  ModifiedBy          #No
+  ModifiedTransactionId #No
+  CreatedDateTime     #No
+  DEL_createdTime     #No
+  CreatedBy           #No
+  CreatedTransactionId #No
+  OccEnabled          #Yes
+  DeveloperDocumentation  #
+  EntityRelationshipType  #Entity
+  Extends             #
+  Abstract            #No
+  InstanceRelationType #
+  SupportInheritance  #No
+  ValidTimeStateFieldType   #None
+  CountryRegionCodes  #
+  CountryRegionContextField     #
+  CreatedBy           #-AOS-
+  CreationDate        #16/11/2012
+  CreationTime        #15:54:56
+  ChangedBy           #-AOS-
+  ChangedDate         #16/11/2012
+  ChangedTime         #16:32:57
+  Origin              #{2C1807C0-0000-1000-6C63-C7DBDD00AD98}
+  LegacyId            #1984
+ENDPROPERTIES
+
+ 
+    FIELDS
+      FIELD #ActionText
+        STRING
+        PROPERTIES
+          Name                #ActionText
+          Table               #SysVersionControlTmpItem
+          Origin              #{D1B46432-5D2F-46E6-B2FE-BA98E6994BBC}
+          LegacyId            #9
+          ExtendedDataType    #SysVersionControlActionText
+          StringSize          #200
+        ENDPROPERTIES
+        
+      FIELD #ChangeNumber
+        INT64
+        PROPERTIES
+          Name                #ChangeNumber
+          Table               #SysVersionControlTmpItem
+          Origin              #{BDE266FA-5CFB-4FCB-B973-BD17D2058F20}
+          LegacyId            #10
+          ExtendedDataType    #SysVersionControlChangeNumber
+        ENDPROPERTIES
+        
+      FIELD #Comment
+        STRING
+        PROPERTIES
+          Name                #Comment
+          Table               #SysVersionControlTmpItem
+          Origin              #{05D8BDEA-DAF8-44E4-8061-DD0A80EE6D9E}
+          LegacyId            #2
+          ExtendedDataType    #SysVersionControlItemComment
+          StringSize          #(Memo)
+        ENDPROPERTIES
+        
+      FIELD #ComputerName
+        STRING
+        PROPERTIES
+          Name                #ComputerName
+          Table               #SysVersionControlTmpItem
+          Origin              #{D7DD9959-A705-4A6E-B333-484EB21BFCCB}
+          LegacyId            #8
+          ExtendedDataType    #ComputerName
+          StringSize          #30
+        ENDPROPERTIES
+        
+      FIELD #Filename
+        STRING
+        PROPERTIES
+          Name                #Filename
+          Table               #SysVersionControlTmpItem
+          Origin              #{EDD71E76-68C2-4AB6-AB5F-C848C54C9B17}
+          LegacyId            #4
+          ExtendedDataType    #Filename
+          StringSize          #259
+        ENDPROPERTIES
+        
+      FIELD #ImageRes
+        INT
+        PROPERTIES
+          Name                #ImageRes
+          Table               #SysVersionControlTmpItem
+          Origin              #{C2F03D5C-4758-4EFE-BF53-CC4CED41FBBB}
+          LegacyId            #12
+          ExtendedDataType    #ImageRes
+        ENDPROPERTIES
+        
+      FIELD #InternalFilename
+        STRING
+        PROPERTIES
+          Name                #InternalFilename
+          Visible             #No
+          Table               #SysVersionControlTmpItem
+          Origin              #{0ED7BE2A-1349-4674-B981-8A3B5E16B926}
+          LegacyId            #11
+          ExtendedDataType    #Filename
+          StringSize          #259
+        ENDPROPERTIES
+        
+      FIELD #ItemPath
+        STRING
+        PROPERTIES
+          Name                #ItemPath
+          Table               #SysVersionControlTmpItem
+          Origin              #{0E5E74D4-6D53-4356-B608-334E10683826}
+          LegacyId            #1
+          ExtendedDataType    #SysVersionControlItemPath
+          StringSize          #400
+        ENDPROPERTIES
+        
+      FIELD #Label
+        STRING
+        PROPERTIES
+          Name                #Label
+          Table               #SysVersionControlTmpItem
+          Origin              #{68A5E31D-BAAB-49D7-92C5-A9D490D04E3E}
+          LegacyId            #16
+          ExtendedDataType    #SysVersionControlLabel
+          StringSize          #31
+        ENDPROPERTIES
+        
+      FIELD #Selected
+        ENUM
+        PROPERTIES
+          Name                #Selected
+          Label               #@SYS28109
+          HelpText            #@SYS111700
+          Table               #SysVersionControlTmpItem
+          Origin              #{0F364A2F-B79D-4E08-8BC0-F16716CAB447}
+          LegacyId            #7
+          EnumType            #NoYes
+        ENDPROPERTIES
+        
+      FIELD #ShortComment
+        STRING
+        PROPERTIES
+          Name                #ShortComment
+          Table               #SysVersionControlTmpItem
+          Origin              #{01DD3A48-FA63-4D3D-B0A5-CFB5AA2C1C59}
+          LegacyId            #14
+          ExtendedDataType    #SysVersionControlItemShortComment
+          StringSize          #60
+        ENDPROPERTIES
+        
+      FIELD #StatusText
+        STRING
+        PROPERTIES
+          Name                #StatusText
+          Table               #SysVersionControlTmpItem
+          Origin              #{F6A94DBC-EEE9-43CF-9AC9-A62B7A9DD366}
+          LegacyId            #13
+          ExtendedDataType    #SysVersionControlStatusText
+        ENDPROPERTIES
+        
+      FIELD #User
+        STRING
+        PROPERTIES
+          Name                #User
+          Table               #SysVersionControlTmpItem
+          Origin              #{FD8D0EC7-E01E-4229-876A-F8395059FED1}
+          LegacyId            #3
+          ExtendedDataType    #Name
+          StringSize          #60
+        ENDPROPERTIES
+        
+      FIELD #VCSDate
+        DATE
+        PROPERTIES
+          Name                #VCSDate
+          Table               #SysVersionControlTmpItem
+          Origin              #{8F3DD330-D10D-4C5A-A0EA-8392F78F3F41}
+          LegacyId            #6
+          ExtendedDataType    #SysVersionControlItemDate
+        ENDPROPERTIES
+        
+      FIELD #VCSTime
+        TIME
+        PROPERTIES
+          Name                #VCSTime
+          Label               #@SYS8758
+          Table               #SysVersionControlTmpItem
+          Origin              #{70028030-BDB5-453D-BF5E-C66DED7C244C}
+          LegacyId            #15
+          ExtendedDataType    #TimeOfDay
+        ENDPROPERTIES
+        
+      FIELD #Version
+        INT
+        PROPERTIES
+          Name                #Version
+          Table               #SysVersionControlTmpItem
+          Origin              #{C743EFD9-605A-4B2A-AD3F-8EB296A54D61}
+          LegacyId            #5
+          ExtendedDataType    #SysVersionControlItemVersion
+        ENDPROPERTIES
+        
+    ENDFIELDS
+    GROUPS
+      GROUP #ChangelistGrid
+        PROPERTIES
+          Name                #ChangelistGrid
+          Label               #@SYS9039
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #ItemPath
+          #Version
+          #ActionText
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #ChangelistHeader
+        PROPERTIES
+          Name                #ChangelistHeader
+          Label               #@SYS2952
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #ChangeNumber
+          #User
+          #ComputerName
+          #VCSDate
+          #VCSTime
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Comment
+        PROPERTIES
+          Name                #Comment
+          Label               #@SYS7576
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Comment
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Identification
+        PROPERTIES
+          Name                #Identification
+          Label               #@SYS5711
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #ItemPath
+          #Filename
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #ModifiedBy
+        PROPERTIES
+          Name                #ModifiedBy
+          Label               #@SYS75729
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #User
+          #ComputerName
+          #VCSDate
+          #VCSTime
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Overview
+        PROPERTIES
+          Name                #Overview
+          Label               #@SYS9039
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Version
+          #ActionText
+          #VCSDate
+          #VCSTime
+          #User
+          #ChangeNumber
+          #itemPathUsingObjectName
+          #ShortComment
+          #Label
+        ENDGROUPFIELDS
+      ENDGROUP
+    ENDGROUPS
+    
+    INDICES
+      #DateIdx
+      PROPERTIES
+        Name                #DateIdx
+        Origin              #{2B070001-07C0-1000-4461-746549647800}
+        LegacyId            #1
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #VCSDate
+      ENDINDEXFIELDS
+      
+    ENDINDICES
+    FULLTEXTINDICES
+    ENDFULLTEXTINDICES
+    REFERENCES
+    ENDREFERENCES
+    
+    DELETEACTIONS
+    ENDDELETEACTIONS
+    
+    METHODS
+      SOURCE #fileName
+        #public FilenameOpen fileName()
+        #{
+        #    if (!this.Filename)
+        #    {
+        #        this.Filename = versioncontrol.getItemVersion(this.getControllable(), this);
+        #        if (!this.Filename)
+        #        {
+        #            //
+        #            // The file could not be retrieved, e.g. in case of a deletion.
+        #            //
+        #            throw error("@SYS86327");
+        #        }
+        #    }
+        #    return this.Filename;
+        #}
+      ENDSOURCE
+      SOURCE #generateShortComment
+        #private SysVersionControlItemShortComment generateShortComment()
+        #{
+        #    return strRem(this.Comment, '\n\r');
+        #}
+      ENDSOURCE
+      SOURCE #getComparable
+        #public SysComparable getComparable()
+        #{
+        #    #SysVersionControl
+        #    #AOT
+        #
+        #    if (match(#LabelMatch, this.ItemPath))
+        #    {
+        #        return SysLabelFile::newVCSItem(this);
+        #    }
+        #
+        #    if (match(#DefFileMatch, this.ItemPath))
+        #    {
+        #        return SysVersionControlDefFile::newVCSItem(this);
+        #    }
+        #
+        #    if (match(#VSProjectPathMatch, this.ItemPath))
+        #    {
+        #        return SysTreeNodeVirtualVCS::newVCSItem(this);
+        #    }
+        #
+        #    if (this.ItemPath && SysVersionControlTmpItem::isValidXPOFile(this.InternalFilename))
+        #    {
+        #        return SysTreeNodeVirtualVCS::newVCSItem(this);
+        #    }
+        #
+        #
+        #    return SysVersionControlFile::newVCSItem(this);
+        #}
+      ENDSOURCE
+      SOURCE #getControllable
+        #/// <summary>
+        #/// Constructs a <c>SysVersionControllable</c> object.
+        #/// </summary>
+        #/// <param name="_forceVirtualDeletedForDeleteOperation">
+        #/// A Boolean value that indicates whether to always use a <c>SysTreeNodeVirtualDeleted</c> instance
+        #/// when the file is opened for delete.
+        #/// </param>
+        #/// <returns>
+        #/// An instance of a class that implements the <c>SysVersionControllable</c> interface.
+        #/// </returns>
+        #/// <remarks>
+        #/// If the caller expects a <c>SysTreeNodeVirtualDeleted</c> object in case of delete, use true for the
+        #/// value of the <paramref name="_forceVirtualDeletedForDeleteOperation" /> parameter.Otherwise, this
+        #/// method will return a non-virtual object when the delete object actually exists in the AOT. This can
+        #/// occur, for example, when the delete operation was a result of moving an object to a different model.
+        #/// </remarks>
+        #public SysVersionControllable getControllable(boolean _forceVirtualDeletedForDeleteOperation = false)
+        #{
+        #    SysVersionControllable      controllable;
+        #    boolean                     forceVirtualDeleted;
+        #
+        #    forceVirtualDeleted = _forceVirtualDeletedForDeleteOperation && versioncontrol.parmSysVersionControlSystem().isTmpItemOpenedForDelete(this);
+        #
+        #    controllable = SysVersionControlTmpItem::newControllable(this.itemPathUsingObjectName(), this.InternalFilename, !forceVirtualDeleted);
+        #
+        #    if (!controllable)
+        #    {
+        #        controllable = SysVersionControlFile::newVCSItem(this);
+        #    }
+        #    return controllable;
+        #}
+      ENDSOURCE
+      SOURCE #getVirtualTreenode
+        #public TreeNode getVirtualTreenode(Filename _filename = this.fileName())
+        #{
+        #    #AOT
+        #    #AotExport
+        #    #File
+        #
+        #    TmpAotImport        tmpImportAot;
+        #    SysImportElements   sysImportElements = new SysImportElements();
+        #
+        #    TreeNode  treeNodeImport  = null;
+        #    int       exportId;
+        #    int       flag            = (#impGetCompareNode + #impKeepIds);
+        #    str       name;
+        #    str       extension;
+        #
+        #    extension = System.IO.Path::GetExtension(_filename);
+        #
+        #    if (match(#vsProjFileExtMatch, extension))
+        #    {
+        #        return SysTreeNodeVSProject::getVirtualProject(_filename);
+        #    }
+        #
+        #    // Set the filename.
+        #    sysImportElements.newFile(_filename);
+        #
+        #    // Get info from the file
+        #    tmpImportAot = sysImportElements.getTmpImportAot();
+        #
+        #    // Create an import context
+        #    exportId     = infolog.startImport(_filename, flag);
+        #
+        #    // Get the right name - for doc nodes it is the path excl the first part
+        #    switch (tmpImportAot.UtilFileType)
+        #    {
+        #        case UtilFileType::Application:
+        #            name = tmpImportAot.TreeNodeName;
+        #            break;
+        #        case UtilFileType::KernelHelp:
+        #            name = strDel(tmpImportAot.TreeNodePath, 1, strLen(#SystemDocPath));
+        #            break;
+        #        default:
+        #            name = tmpImportAot.TreeNodeName;
+        #            break;
+        #    }
+        #
+        #    // Import the node in memory
+        #    treeNodeImport  = infolog.getImportedNode(
+        #        exportId,
+        #        tmpImportAot.UtilFileType,
+        #        tmpImportAot.UtilElementType,
+        #        name,
+        #        tmpImportAot.FilePos,
+        #        flag);
+        #
+        #    // Close the import context
+        #    infolog.endImport(exportId, 1);
+        #
+        #    return treeNodeImport;
+        #}
+      ENDSOURCE
+      SOURCE #insert
+        #public void insert()
+        #{
+        #    this.ShortComment = this.generateShortComment();
+        #    super();
+        #}
+      ENDSOURCE
+      SOURCE #itemPathUsingObjectName
+        #// BP deviation documented
+        #display SysVersionControlItemPath itemPathUsingObjectName()
+        #{
+        #    int len = strLen(this.ItemPath);
+        #    int i = strScan(this.ItemPath, '\\', len, -len);
+        #
+        #    return subStr(this.ItemPath,1,i)+this.objectName();
+        #}
+      ENDSOURCE
+      SOURCE #objectName
+        #// BP deviation documented
+        #display IdentifierName objectName()
+        #{
+        #    #file
+        #
+        #    int len = strLen(this.InternalFilename);
+        #    int i = strScan(this.InternalFilename, '\\', len, -len);
+        #    int j = strScan(this.InternalFilename, #xpo, 1 , len);
+        #    if (!j)
+        #        j = strScan(this.InternalFilename, #ald, 1 , len);
+        #    if (!j)
+        #        j = strScan(this.InternalFilename, #xml, 1 , len);
+        #    if (!i)
+        #        i = strScan(this.InternalFilename, '/', len, -len);
+        #
+        #    // If the name does not contain well known extensions return the whole name
+        #    if (!j)
+        #        j = len + 1;
+        #
+        #    if (i && j && i<j)
+        #        return subStr(this.InternalFilename, i+1, j-i-1);
+        #    return '';
+        #}
+      ENDSOURCE
+      SOURCE #openNewWindow
+        #public void openNewWindow()
+        #{
+        #    TreeNode treeNode = this.getVirtualTreenode();
+        #    if (treeNode)
+        #        treeNode.AOTnewWindow();
+        #}
+      ENDSOURCE
+      SOURCE #viewFile
+        #public void viewFile()
+        #{
+        #    #WinApi
+        #    #define.Command('cmd')
+        #    #define.Notepad('/c notepad \%1')
+        #
+        #;
+        #    if (WinAPI::fileExists(this.fileName()))
+        #        WinAPI::shellExecute(#Command,strFmt(#Notepad,this.fileName()),'',#ShellExeOpen,#SW_HIDE);
+        #    else
+        #        error(strFmt("@SYS19312", this.fileName()));
+        #}
+      ENDSOURCE
+      SOURCE #compareContext
+        #public static SysCompareContextProvider compareContext(SysVersionControlTmpItem _item1, SysVersionControlTmpItem _item2 = null)
+        #{
+        #    SysComparable comparable1 = _item1 ? _item1.getComparable() : null;
+        #    SysComparable comparable2 = _item2 ? _item2.getComparable() : null;
+        #    SysLabelFile  labelFile1, labelFile2;
+        #    SysTreeNode   treeNode1, treeNode2;
+        #    TreeNode      treeNode;
+        #
+        #    if (comparable1 is SysLabelFile)
+        #    {
+        #        labelFile1 = comparable1 as SysLabelFile;
+        #        labelFile2 = comparable2 as SysLabelFile;
+        #        if (labelFile1)
+        #        {
+        #            if (!labelFile2)
+        #            {
+        #                labelFile2 = SysLabelFile::newLanguageModule(labelFile1.parmLanguageId(), labelFile1.parmModuleId());
+        #            }
+        #            return SysLabelFileCompareContext::newSysLabelFiles(labelFile1, labelFile2);
+        #        }
+        #    }
+        #
+        #    if (comparable1 is SysTreeNode)
+        #    {
+        #        treeNode1 = comparable1 as SysTreeNode;
+        #        treeNode2 = comparable2 as SysTreeNode;
+        #
+        #        if (treeNode1)
+        #        {
+        #            if (!treeNode2)
+        #            {
+        #                if (_item2 && _item2.ItemPath)
+        #                {
+        #                    treeNode  = TreeNode::findNode(_item2.ItemPath);
+        #                }
+        #                else
+        #                {
+        #                    treeNode  = TreeNode::findNode(_item1.ItemPath);
+        #                }
+        #                treeNode2 = SysTreeNode::newTreeNode(treeNode);
+        #            }
+        #            return SysTreenodeCompareContext::newSysTreeNode(treeNode1, treeNode2);
+        #        }
+        #    }
+        #
+        #    if (comparable1 && comparable2)
+        #    {
+        #        return SysComparableCompareContext::newComparables(comparable1, comparable2);
+        #    }
+        #
+        #    // If the second comparable is null, try to find the node in repository for comparison.
+        #    if (comparable1 && !comparable2)
+        #    {
+        #        treeNode  = TreeNode::findNode(_item1.ItemPath);
+        #
+        #        if (treeNode)
+        #        {
+        #            treeNode2 = SysTreeNode::newTreeNode(treeNode);
+        #
+        #            if (treeNode2)
+        #            {
+        #                return SysComparableCompareContext::newComparables(comparable1, treeNode2);
+        #            }
+        #        }
+        #    }
+        #
+        #    return null;
+        #}
+      ENDSOURCE
+      SOURCE #hasSeveralNames
+        #public static boolean hasSeveralNames(SysVersionControlTmpItem _item)
+        #{
+        #    Set set = new Set(Types::String);
+        #
+        #    while select _item
+        #    {
+        #        set.add(_item.itemPathUsingObjectName());
+        #    }
+        #    return set.elements() > 1;
+        #}
+      ENDSOURCE
+      SOURCE #isValidXPOFile
+        #static public boolean isValidXPOFile(Filename _filename)
+        #{
+        #    #File
+        #    UtilEntryLevel layer;
+        #    int i;
+        #    MapEnumerator enum;
+        #    Filename filename = _filename;
+        #
+        #
+        #    //
+        #    // Is it an xpo file?
+        #    //
+        #    if (strScan(filename, #xpo, 1, strLen(filename)))
+        #    {
+        #        // Is it placed in a layer folder?
+        #        //
+        #        filename = strReplace(filename, '\\', '/');
+        #        for (i=0; i<enumCnt(UtilEntryLevel); i++)
+        #        {
+        #            layer = i;
+        #            if (strScan(filename, strFmt('/%1/', layer), 1, strLen(filename)))
+        #                return true;
+        #        }
+        #
+        #        //
+        #        // Is it part of model
+        #        //
+        #        if (versioncontrol.parmSysVersionControlSystem() && versioncontrol.parmSysVersionControlSystem().parmModelFolders())
+        #        {
+        #            enum = versioncontrol.parmSysVersionControlSystem().parmModelFolders().getEnumerator();
+        #            while (enum.moveNext())
+        #            {
+        #                if (strScan(filename, strFmt('/%1/', enum.currentKey()), 1, strLen(filename)))
+        #                    return true;
+        #            }
+        #        }
+        #
+        #        //
+        #        // Is it placed in an additional folder?
+        #        //
+        #        if (versioncontrol.parmSysVersionControlSystem() && versioncontrol.parmSysVersionControlSystem().parmAdditionalFolders())
+        #        {
+        #            enum = versioncontrol.parmSysVersionControlSystem().parmAdditionalFolders().getEnumerator();
+        #            while (enum.moveNext())
+        #            {
+        #                if (strScan(filename, strFmt('/%1/', enum.currentKey()), 1, strLen(filename)))
+        #                    return true;
+        #            }
+        #        }
+        #    }
+        #    return false;
+        #}
+      ENDSOURCE
+      SOURCE #newControllable
+        #/// <summary>
+        #/// Constructs a new Controllable.
+        #/// </summary>
+        #/// <param name="_itemPath">
+        #/// A <c>SysVersionControlItemPath</c> for the controllable.
+        #/// </param>
+        #/// <param name="_filename">
+        #/// The local file path of the element under version control.
+        #/// </param>
+        #/// <param name="_useTreeNode">
+        #/// A Boolean value that indicates whether a controllable can be created by using a tree node from the
+        #/// AOT.
+        #/// </param>
+        #/// <returns>
+        #/// An instance of a class implementing the <c>SysVersionControllable</c> interface when the element is
+        #/// supported; otherwise null.
+        #/// </returns>
+        #/// <remarks>
+        #/// Set the value of the <paramref name="_useTreeNode" /> parameter to false to make sure that a
+        #/// <c>SysTreeNodeVirtualDeleted</c> object is created for AOT elements.
+        #/// </remarks>
+        #public static client server SysVersionControllable newControllable(
+        #    SysVersionControlItemPath _itemPath,
+        #    Filename                  _filename,
+        #    boolean                   _useTreeNode = true)
+        #{
+        #    TreeNode        treeNode;
+        #    LanguageId      languageId;
+        #    LabelModuleId   labelModuleId;
+        #    #SysVersionControl
+        #    #AOT
+        #
+        #    if (_itemPath && _useTreeNode)
+        #    {
+        #        treeNode = TreeNode::findNode(_itemPath);
+        #        if (treeNode)
+        #        {
+        #            return SysTreeNode::newTreeNode(treeNode);
+        #        }
+        #    }
+        #    //
+        #    // _itemPath = "\labels\axsysen-us.ald"
+        #    //
+        #    if (match(#LabelMatch, _itemPath))
+        #    {
+        #        [labelModuleId, languageId] = SysLabelFile::splitLabelFileName(_itemPath);
+        #        return SysLabelFile::newLanguageModule(languageId, labelModuleId);
+        #    }
+        #
+        #    //
+        #    // _itemPath = "\definition\VCSDef.xml"
+        #    //
+        #    if (match(#DefFileMatch, _itemPath))
+        #    {
+        #        return SysVersionControlDefFile::newVCSDefFile();
+        #    }
+        #
+        #    //
+        #    // _itemPath = "*\Model"
+        #    //
+        #    if (match(#ModelMatch, _itemPath))
+        #    {
+        #        return SysVersionControlModelFile::newItemPath(_itemPath);
+        #    }
+        #
+        #    if (match(#VSProjectsPath, _itemPath))
+        #    {
+        #        return SysTreeNodeVirtualDeleted::newTreeNodePath(_itemPath);
+        #    }
+        #
+        #    if (_itemPath && SysVersionControlTmpItem::isValidXPOFile(_filename))
+        #    {
+        #        return SysTreeNodeVirtualDeleted::newTreeNodePath(_itemPath);
+        #    }
+        #    return null;
+        #}
+      ENDSOURCE
+      SOURCE #releaseControllable
+        #/// <summary>
+        #///    Releases a tree node object from memory if the specified <c>SysVersionControllable</c> object is a
+        #///    node of a <c>SysTreeNode</c> class tree.
+        #/// </summary>
+        #/// <param name="_controllable">
+        #///    The specified <c>SysVersionControllable</c> object.
+        #/// </param>
+        #public static client void releaseControllable(SysVersionControllable _controllable)
+        #{
+        #    SysTreeNode sysTreeNode;
+        #    TreeNode nodeToRelease;
+        #
+        #    // if the controllable is a treenode, then release it.
+        #    sysTreeNode = _controllable as SysTreeNode;
+        #    if (sysTreeNode)
+        #    {
+        #        nodeToRelease = sysTreeNode.parmTreeNode() as TreeNode;
+        #        if (nodeToRelease &&
+        #            TreeNode::isNodeReferenceValid(nodeToRelease) &&
+        #            nodeToRelease.treeNodeType().isConsumingMemory())
+        #        {
+        #            nodeToRelease.treeNodeRelease();
+        #        }
+        #    }
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDTABLE
+  
+
+***Element: END

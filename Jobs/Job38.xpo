@@ -1,0 +1,56 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: JOB
+
+; 
+; --------------------------------------------------------------------------------
+  JOBVERSION 1
+  
+  SOURCE #Job38
+    #static void Job38(Args _args)
+    #{
+    #    #define.FileName(@'C:\Users\bmindaugas\esn.git\Classes\AppAot.xpo')
+    #
+    #    System.Text.UTF8Encoding    encoding = new System.Text.UTF8Encoding(false);
+    #    System.IO.StreamReader      streamReader;
+    #    System.IO.StreamWriter      streamWriter;
+    #    System.Text.RegularExpressions.Regex regex;
+    #    System.Text.RegularExpressions.Match regexMatch;
+    #
+    #    str                         text;
+    #    str                         regExPattern;
+    #
+    #    streamReader = new System.IO.StreamReader(#FileName, encoding);
+    #    text          = streamReader.ReadToEnd();
+    #    streamReader.Close();
+    #
+    #    // works, but eats too much regExPattern = '.*PROPERTIES(\r\n|.)*ENDPROPERTIES\r\n';
+    #    regExPattern = '.*PROPERTIES(\r\n|.)*ENDPROPERTIES';
+    #    regex = new System.Text.RegularExpressions.Regex(regExPattern, System.Text.RegularExpressions.RegexOptions::Multiline);
+    #    regexMatch = regex.Match(text);
+    #    if (regexMatch.get_Success())
+    #    {
+    #        print 'Index ', regexMatch.get_Index();
+    #        print 'Length ', regexMatch.get_Length();
+    #        print 'Value ', regexMatch.get_Value();
+    #
+    #        pause;
+    #    }
+    #
+    #    text = System.Text.RegularExpressions.Regex::Replace(text, regExPattern, 'NPROP\r\nXPROP');
+    #
+    #
+    #    //streamWriter = new System.IO.StreamWriter(#FileName, false, encoding);
+    #    //streamWriter.Write(text);
+    #    //streamWriter.Close();
+    #
+    #
+    #}
+  ENDSOURCE
+  PROPERTIES
+    Origin              #{623887C0-446F-4636-BB85-120C7F476ECF}
+  ENDPROPERTIES
+  
+
+***Element: END

@@ -1,0 +1,32 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: JOB
+
+; 
+; --------------------------------------------------------------------------------
+  JOBVERSION 1
+  
+  SOURCE #Job37
+    #static void Job37(Args _args)
+    #{
+    #    TextBuffer   textBuffer = new TextBuffer();
+    #
+    #    textBuffer.fromFile(@'C:\Users\bmindaugas\Ax2Git\Classes\Git.xpo', FileEncoding::UTF8);
+    #    textBuffer.regularExpressions(true);
+    #
+    #    //print 'numLines: ', textBuffer.numLines();
+    #
+    #    print 'find(): ', textBuffer.find('\n.');
+    #    print 'matchPos(): ', textBuffer.matchPos();
+    #    print 'matchLen(): ', textBuffer.matchLen();
+    #    print textBuffer.subStr(textBuffer.matchPos(), textBuffer.matchLen());
+    #    pause;
+    #}
+  ENDSOURCE
+  PROPERTIES
+    Origin              #{5469FC75-1A66-4339-B2F6-F8C13E1C83F1}
+  ENDPROPERTIES
+  
+
+***Element: END
