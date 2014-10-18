@@ -159,7 +159,9 @@ Formatversion: 1
         #                Git::mergeInteractive(repoPath);
         #
         #                if (Box::yesNo('Were the conflicts resolved? \nDo you want to proceed?' , DialogButton::Yes) != DialogButton::Yes)
+        #                {
         #                    break;
+        #                }
         #
         #                if (foregroundHwnd)
         #                {
@@ -190,7 +192,9 @@ Formatversion: 1
         #            Git::commitInteractive(repoPath, enum2str(layer));
         #
         #            if (Box::yesNo("Do you want to proceed to next layer?", DialogButton::Yes) != DialogButton::Yes)
+        #            {
         #                return; //break;
+        #            }
         #
         #            if (foregroundHwnd)
         #            {
@@ -530,120 +534,22 @@ Formatversion: 1
         #    System.IO.StreamWriter      streamWriter;
         #    System.String               text;
         #
-        #    //str                                             pattern;
-        #    //str                                             propertiesStr;
-        #    //System.Text.RegularExpressions.Regex            regEx;
-        #    //System.Text.RegularExpressions.Match            regExMatch;
-        #    //System.Text.RegularExpressions.MatchCollection  regExMatchCollection;
+        #    System.Text.RegularExpressions.RegexOptions regexOptions;
         #
+        #    // Read XPO file
         #    streamReader = new System.IO.StreamReader(_fullPath, encoding);
         #    text          = streamReader.ReadToEnd();
         #    streamReader.Close();
         #
-        #    // Remove comment line which depend on user settings and may trigger false changes in XPO files
-        #    text = System.Text.RegularExpressions.Regex::Replace(text, '; [A-Z].*\r\n', '; \r\n');
-        #
-        #
-        #    // Replace standard PROPERTIES section with full set of properties, including read-only ones
-        #
-        #    /* CONFLICTS with xpo export workaround: each export changes ChangedTime resulting in false diffs
-        #    pattern = '(\r\n  PROPERTIES\r\n(.|\r\n)+?\r\n  ENDPROPERTIES\r\n){1}?';
-        #
-        #    regEx = new System.Text.RegularExpressions.Regex(pattern, System.Text.RegularExpressions.RegexOptions::Singleline);
-        #    regExMatchCollection = regEx.Matches(text);
-        #    regExMatch = regExMatchCollection.get_Item(0);
-        #
-        #    propertiesStr = _treeNode.AOTgetProperties();
-        #    propertiesStr = System.Text.RegularExpressions.Regex::Replace(propertiesStr, '\n$', '');      // Remove trailing \n
-        #    propertiesStr = System.Text.RegularExpressions.Regex::Replace(propertiesStr, '\n', '\r\n  '); // Fix CR and increse indent
-        #    propertiesStr = '\r\n  ' + propertiesStr + '\r\n';
-        #
-        #    text = text.Replace(regExMatch.get_Value(), propertiesStr);
-        #
-        #    // Incorrect - replaces ALL occurrences of PROPERTIES. Probably can be solved by tuning regex pattern
-        #    //text = System.Text.RegularExpressions.Regex::Replace(
-        #        //text,
-        #        //pattern,
-        #        //propertiesStr,
-        #        //System.Text.RegularExpressions.RegexOptions::Singleline
-        #        //);
-        #    */
+        #    // Comment line like this may trigger false changes in XPO files (e.g. when exporting with different language settings):
+        #    // "; Microsoft Dynamics AX Job: Job39 unloaded"
+        #    // Replace it with "; "
+        #    regexOptions = System.Text.RegularExpressions.RegexOptions::Multiline;
+        #    text = System.Text.RegularExpressions.Regex::Replace(text, '^; [A-Z].*$\n', '; \r\n', regexOptions);
         #
         #    streamWriter = new System.IO.StreamWriter(_fullPath, false, encoding);
         #    streamWriter.Write(text);
         #    streamWriter.Close();
-        #}
-      ENDSOURCE
-      SOURCE #removeExportComment_DEL
-        #static void removeExportComment_DEL(
-        #    TreeNode    _treeNode,
-        #    str         _fullPath)
-        #
-        #{
-        #    #define.encoding(FileEncoding::UTF8)
-        #
-        #    TextBuffer                              textBuffer;
-        #    System.Text.RegularExpressions.Regex    regex;
-        #
-        #    int         startPos;
-        #    int         endPos;
-        #
-        #    new FileIoPermission(_fullPath,'w').assert();
-        #    textBuffer = new TextBuffer();
-        #
-        #    if (! textBuffer.fromFile(_fullPath, #encoding))
-        #        throw error(strFmt('Failed loading file %1', _fullPath));
-        #
-        #    //textBuffer.regularExpressions(true);
-        #    regex = new System.Text.RegularExpressions.Regex('todo');
-        #
-        #    textBuffer.setText(regex.Replace(textBuffer.getText(), 'todo'));
-        #
-        #    /*
-        #        Every XPO file contains these lines (language depends on user settings!):
-        #
-        #    ; 
-        #    ; --------------------------------------------------------------------------------
-        #
-        #        Must be removed to prevent committing of false modifications.
-        #    */
-        #    textBuffer.find('<;: :n+', 0);                     // find first comment line starting with '; 
-        #    startPos = textBuffer.matchPos();
-        #    endPos = startPos + textBuffer.matchLen();
-        #
-        #    textBuffer.find('<;: -', startPos+1);               // find end of comment line
-        #    endPos = textBuffer.matchPos();
-        #
-        #    textBuffer.delete(startPos+3, endPos-startPos-3); // remove comment, leaving blank line
-        #
-        #    // Standard Ax export does not export AOT objects' read-only properties, like "ChangedBy" or "ChangeDate".
-        #    // It might be useful to track changes in these properties also
-        #    // Replace it with full list of properties
-        #info(strFmt('%1',textBuffer.regularExpressions()));
-        #
-        #    if (textBuffer.find('<:SPACE+PROPERTIES>', 0))
-        #    {
-        #        startPos = textBuffer.matchPos();
-        #
-        #        if (textBuffer.find('ENDPROPERTIES\n', 0))
-        #        {
-        #        endPos = textBuffer.matchPos();
-        #info(textBuffer.subStr(startPos, endPos-startPos));
-        #    endPos += strLen('ENDPROPERTIES');
-        #info(textBuffer.subStr(startPos, endPos-startPos));
-        #    textBuffer.find('\n', endPos+2);
-        #    endPos = textBuffer.matchPos();
-        #info(textBuffer.subStr(startPos, endPos-startPos));
-        #
-        #    textBuffer.delete(startPos, endPos-startPos);
-        #    textBuffer.insert(_treeNode.AOTgetProperties(), startPos);
-        #        }
-        #    }
-        #
-        #    textBuffer.toFile(_fullPath, #encoding);
-        #
-        #    textBuffer.setText('');
-        #    textBuffer = null;
         #}
       ENDSOURCE
       SOURCE #runProgram
