@@ -20,6 +20,7 @@ FORM #GitExportDialog
       #    #define.identifierName('GitLastPaths')
       #
       #    GitExport               gitExport;
+      #    FilePath                repositoryPath;
       #    container               lastPaths;
       #    str                     lastPathsStr;
       #    NoYes                   exportProjDef;
@@ -52,7 +53,7 @@ FORM #GitExportDialog
       #{
       #    DialogRunbase dialog = element.args().caller();
       #
-      #    element.updateBox(filePath.getEditText(), false);
+      #    element.updateBox(repositoryPath, false);
       #
       #    exportProjDef       = ExportProjDefControl.value();
       #    exportLayers        = exportLayersControl.selection();
@@ -123,7 +124,7 @@ FORM #GitExportDialog
     SOURCE #getPath
       #public str getPath()
       #{
-      #    return filePath.getEditText();
+      #    return repositoryPath;
       #}
     ENDSOURCE
     SOURCE #init
@@ -244,7 +245,7 @@ FORM #GitExportDialog
       #}
     ENDSOURCE
     SOURCE #updateBox
-      #void updateBox(Filename _path = '', boolean _updateBox = true)
+      #void updateBox(FilePath _path = '', boolean _updateBox = true)
       #{
       #    int         i;
       #
@@ -268,6 +269,11 @@ FORM #GitExportDialog
       #
       #        for (i = 1; i <= conlen(lastPaths); i++)
       #        {
+      #            if (i == 1)
+      #            {
+      #                repositoryPath = conpeek(lastPaths, i);
+      #            }
+      #
       #            if (conpeek(lastPaths, i))
       #            {
       #                filePath.add(conpeek(lastPaths, i));
@@ -283,7 +289,7 @@ FORM #GitExportDialog
     SOURCE #updateBranchList
       #public void updateBranchList()
       #{
-      #    container   branchesCon = Git::getBranches(filePath.getEditText());
+      #    container   branchesCon = Git::getBranches(repositoryPath);
       #    int         i;
       #
       #    branchList.clear();
@@ -295,6 +301,8 @@ FORM #GitExportDialog
       #            branchList.add(conpeek(branchesCon, i));
       #        }
       #    }
+      #
+      #    branchList.setEditText(Git::getCurrentBranch(repositoryPath));
       #}
     ENDSOURCE
   ENDMETHODS
@@ -601,6 +609,7 @@ FORM #GitExportDialog
         PROPERTIES
           Name                #BranchList
           AutoDeclaration     #Yes
+          Width               #300
           ElementPosition     #1431655764
           HierarchyParent     #CheckoutBranchGrp
           Label               #Branch
@@ -656,6 +665,8 @@ FORM #GitExportDialog
             #    boolean ret;
             #
             #    ret = super();
+            #
+            #    repositoryPath = filePath.getEditText();
             #
             #    element.updateBranchList();
             #

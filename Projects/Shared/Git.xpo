@@ -15,60 +15,6 @@ Formatversion: 1
   ENDPROPERTIES
   
     PROJECTCLASS ProjectNode
-    GROUP #REF
-      PROPERTIES
-        Name                #REF
-        ProjectGroupType    #All
-        GroupMask           #
-        PreventEditProperties #No
-      ENDPROPERTIES
-      
-      GROUP #Tables
-        PROPERTIES
-          Name                #Tables
-          ProjectGroupType    #Tables
-          GroupMask           #
-          PreventEditProperties #No
-        ENDPROPERTIES
-        
-        BEGINNODE
-          FILETYPE 0
-          UTILTYPE 44
-          NODETYPE 204
-          NAME #SysVersionControlTmpChange
-        ENDNODE
-        BEGINNODE
-          FILETYPE 0
-          UTILTYPE 44
-          NODETYPE 204
-          NAME #SysVersionControlTmpItem
-        ENDNODE
-        ENDGROUP
-        
-      GROUP #Forms
-        PROPERTIES
-          Name                #Forms
-          ProjectGroupType    #Forms
-          GroupMask           #
-          PreventEditProperties #No
-        ENDPROPERTIES
-        
-        BEGINNODE
-          FILETYPE 0
-          UTILTYPE 11
-          NODETYPE 201
-          NAME #SysVersionControlChangeContents
-        ENDNODE
-        BEGINNODE
-          FILETYPE 0
-          UTILTYPE 11
-          NODETYPE 201
-          NAME #SysVersionControlChangesHistory
-        ENDNODE
-        ENDGROUP
-        
-      ENDGROUP
-      
     GROUP #BaseEnums
       PROPERTIES
         Name                #BaseEnums
@@ -98,12 +44,6 @@ Formatversion: 1
         UTILTYPE 11
         NODETYPE 201
         NAME #GitExportDialog
-      ENDNODE
-      BEGINNODE
-        FILETYPE 0
-        UTILTYPE 11
-        NODETYPE 201
-        NAME #GitLog
       ENDNODE
       ENDGROUP
       
@@ -197,18 +137,6 @@ Formatversion: 1
         PreventEditProperties #No
       ENDPROPERTIES
       
-      BEGINNODE
-        FILETYPE 0
-        UTILTYPE 5
-        NODETYPE 215
-        NAME #Job38
-      ENDNODE
-      BEGINNODE
-        FILETYPE 0
-        UTILTYPE 5
-        NODETYPE 215
-        NAME #Job37
-      ENDNODE
       BEGINNODE
         FILETYPE 0
         UTILTYPE 5
