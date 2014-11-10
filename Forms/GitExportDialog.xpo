@@ -292,6 +292,11 @@ FORM #GitExportDialog
       #    container   branchesCon = Git::getBranches(repositoryPath);
       #    int         i;
       #
+      #    if (repositoryPath)
+      #    {
+      #        branchesCon = Git::getBranches(repositoryPath);
+      #    }
+      #
       #    branchList.clear();
       #
       #    for (i = 1; i <= conlen(branchesCon); i++)
@@ -302,7 +307,10 @@ FORM #GitExportDialog
       #        }
       #    }
       #
-      #    branchList.setEditText(Git::getCurrentBranch(repositoryPath));
+      #    if (repositoryPath)
+      #    {
+      #        branchList.setEditText(Git::getCurrentBranch(repositoryPath));
+      #    }
       #}
     ENDSOURCE
   ENDMETHODS
