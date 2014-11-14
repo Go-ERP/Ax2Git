@@ -1,0 +1,278 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: CLS
+
+; 
+; --------------------------------------------------------------------------------
+  CLSVERSION 1
+  
+  CLASS #GitImport
+    PROPERTIES
+      Name                #GitImport
+      Extends             #RunBase
+      Origin              #{BB99648C-2E67-4F8E-8249-2FDC7541901B}
+    ENDPROPERTIES
+    
+    METHODS
+      SOURCE #buildNodeSet
+        #protected void buildNodeSet(TreeNode _treeNode)
+        #{
+        #    TreeNodeIterator    treeNodeIterator;
+        #    TreeNode            childNode;
+        #
+        #    if (GitExport::nodeIsExportable(_treeNode, GitExportLayers::TopLayer))
+        #    {
+        #        nodeSet.add(_treeNode);
+        #    }
+        #    else // Project, group, etc.
+        #    {
+        #        setPrefix(_treeNode.treeNodeName());
+        #
+        #        // Traverse the tree recursively:
+        #        treeNodeIterator = _treeNode.AOTiterator();
+        #        childNode        = treeNodeIterator.next();
+        #
+        #        while (childNode)
+        #        {
+        #            this.buildNodeSet(childNode);
+        #
+        #            childNode.treeNodeRelease();
+        #            childNode = null;
+        #
+        #            childNode = treeNodeIterator.next();
+        #        }
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #callImportForm
+        #private void callImportForm(FileName _fileName)
+        #{
+        #    Args        args = new Args();
+        #    FormRun     formRun;
+        #
+        #    if (!WinAPI::fileExists(_fileName, false))
+        #    {
+        #        throw(error(strFmt('File not found: %1', _fileName)));
+        #    }
+        #
+        #    args.caller(this);
+        #    args.parm(_fileName);
+        #    args.name(formStr(SysImportDialog));
+        #
+        #    formRun = classFactory.formRunClass(args);
+        #
+        #    formRun.init();
+        #    formRun.run();
+        #    formRun.wait();
+        #}
+      ENDSOURCE
+      SOURCE #canGoBatch
+        #public boolean canGoBatch()
+        #{
+        #    return false;
+        #}
+      ENDSOURCE
+      SOURCE #classDeclaration
+        #class GitImport extends RunBase
+        #{
+        #    #AOT
+        #    #TreeNodeSysNodeType
+        #    #AviFiles
+        #
+        #    TreeNode                rootNode;
+        #    FilePath                repoPath;
+        #    str                     branch;
+        #
+        #    Set                     nodeSet;
+        #    SetEnumerator           nodeSetEnumerator;
+        #
+        #    Object                  dialogFormRun;
+        #
+        #    int         dummy;
+        #    #DEFINE.CurrentVersion(1)
+        #    #LOCALMACRO.CurrentList
+        #        dummy
+        #    #ENDMACRO
+        #}
+      ENDSOURCE
+      SOURCE #dialog
+        #protected Object dialog()
+        #{
+        #    DialogRunbase   dialog = Dialog::newFormnameRunbase(formstr(GitImportDialog), this);
+        #
+        #    dialog = this.dialogInternal(dialog);
+        #
+        #    return dialog;
+        #}
+      ENDSOURCE
+      SOURCE #dialogPostRun
+        #public void dialogPostRun(DialogRunbase dialog)
+        #{
+        #    dialogFormRun = dialog.formRun();
+        #
+        #    super(dialog);
+        #}
+      ENDSOURCE
+      SOURCE #getFromDialog
+        #public boolean getFromDialog()
+        #{
+        #    boolean ret;
+        #
+        #    repoPath            = dialogFormRun.getPath();
+        #    branch              = dialogFormRun.getBranch();
+        #
+        #    ret = super();
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #importMultipleNodes
+        #private void importMultipleNodes()
+        #{
+        #    #File
+        #    #localmacro.CombineXPOs
+        #        @'C:\Program Files\Microsoft Dynamics AX\60\ManagementUtilities\CombineXPOs.exe'
+        #    #endmacro
+        #
+        #    TreeNode        treeNode;
+        #    FileName        fileName;
+        #    //FileName        tempPath = WinAPI::getTempPath();
+        #    FileName        combinedFileName;
+        #    FileName        listFileName;
+        #    TextIo          listFile;
+        #    str             combineRet;
+        #
+        #    listFileName = repoPath + @'\xpo_list.txt';
+        #    new FileIOPermission(listFileName, #IO_Write).assert();
+        #    listFile = new TextIo(listFileName, #IO_Write);
+        #
+        #    nodeSetEnumerator = nodeSet.getEnumerator();
+        #
+        #    while (nodeSetEnumerator.moveNext())
+        #    {
+        #        treeNode = nodeSetEnumerator.current();
+        #
+        #        fileName = repoPath + treeNode.treeNodePath() + '.xpo';
+        #        if (WinAPI::fileExists(fileName, false))
+        #        {
+        #            listFile.write(fileName);
+        #        }
+        #        else
+        #        {
+        #             warning(strFmt('File not found: %1', fileName));
+        #        }
+        #
+        #        treeNode.treeNodeRelease();
+        #        treeNode = null;
+        #    }
+        #    listFile = null;
+        #
+        #    combinedFileName = repoPath + @'\COMBINED.xpo';
+        #
+        #    GitExport::runProgram(
+        #        #CombineXPOs,
+        #        strFmt('-utf8 -XpoDir "%1" -SpecifiedXpoFile "%2" -CombinedXpoFile "%3"', repoPath, listFileName, combinedFileName));
+        #
+        #    WinAPI::deleteFile(listFileName);
+        #
+        #    this.callImportForm(combinedFileName);
+        #    WinAPI::deleteFile (combinedFileName);
+        #}
+      ENDSOURCE
+      SOURCE #importSingleNode
+        #private void importSingleNode()
+        #{
+        #    TreeNode        treeNode;
+        #
+        #    nodeSetEnumerator = nodeSet.getEnumerator();
+        #    nodeSetEnumerator.moveNext();
+        #    treeNode = nodeSetEnumerator.current();
+        #
+        #    this.callImportForm(repoPath + treeNode.treeNodePath() + '.xpo');
+        #
+        #    treeNode.treeNodeRelease();
+        #    treeNode = null;
+        #}
+      ENDSOURCE
+      SOURCE #new
+        #public void new()
+        #{
+        #    super();
+        #
+        #    nodeSet = new Set(Types::Class); // (TreeNode)
+        #}
+      ENDSOURCE
+      SOURCE #pack
+        #public container pack()
+        #{
+        #    return [#CurrentVersion, #CurrentList];
+        #}
+      ENDSOURCE
+      SOURCE #parmRootNode
+        #public TreeNode parmRootNode(TreeNode _rootNode = rootNode)
+        #{
+        #    rootNode = _rootNode;
+        #
+        #    return rootNode;
+        #}
+      ENDSOURCE
+      SOURCE #run
+        #public void run()
+        #{
+        #    this.buildNodeSet(rootNode);
+        #
+        #    if (!nodeSet.elements())
+        #    {
+        #        return;
+        #    }
+        #
+        #    Git::checkout(repoPath, branch);
+        #
+        #    if (nodeSet.elements() == 1)
+        #    {
+        #        this.importSingleNode();
+        #    }
+        #    else if (nodeSet.elements() > 1)
+        #    {
+        #        this.importMultipleNodes();
+        #    }
+        #
+        #    rootNode.treeNodeRelease();
+        #    rootNode = null;
+        #}
+      ENDSOURCE
+      SOURCE #unpack
+        #public boolean unpack(container packedClass)
+        #{
+        #    Version version = RunBase::getVersion(packedClass);
+        #;
+        #    switch (version)
+        #    {
+        #        case #CurrentVersion:
+        #            [version,#CurrentList] = packedClass;
+        #            break;
+        #        default:
+        #            return false;
+        #    }
+        #
+        #    return true;
+        #}
+      ENDSOURCE
+      SOURCE #construct
+        #public static GitImport construct(str _menuItemName)
+        #{
+        #    switch (_menuItemName)
+        #    {
+        #        case menuitemActionStr(GitSysContextMenuImport) :
+        #            return new GitImport();
+        #
+        #        default :
+        #            throw(error(strFmt("@SYS19306", funcName())));
+        #    }
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDCLASS
+
+***Element: END

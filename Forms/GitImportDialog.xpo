@@ -1,0 +1,626 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: FRM
+
+; 
+; --------------------------------------------------------------------------------
+FRMVERSION 12
+
+FORM #GitImportDialog
+  PROPERTIES
+    Name                #GitImportDialog
+    Origin              #{021EFEBB-56B0-48E5-9B08-1103E3FC42ED}
+  ENDPROPERTIES
+  
+  METHODS
+    SOURCE #classDeclaration
+      #class FormRun extends ObjectRun
+      #{
+      #    #define.identifierName('GitLastPaths')
+      #
+      #    GitExport               gitExport;
+      #    FilePath                repositoryPath;
+      #    container               lastPaths;
+      #    str                     lastPathsStr;
+      #    NoYes                   importProjDef;
+      #    str                     branch;
+      #
+      #    #Define.CurrentVersion(4)
+      #    #localmacro.CurrentList
+      #        lastPathsStr,
+      #        importProjDef,
+      #        branch
+      #    #endmacro
+      #
+      #    #Define.pathsInHistory(5)
+      #}
+    ENDSOURCE
+    SOURCE #closeOk
+      #public void closeOk()
+      #{
+      #    DialogRunbase dialog = element.args().caller();
+      #
+      #    element.updateBox(repositoryPath, false);
+      #
+      #    importProjDef       = ImportProjDefControl.value();
+      #    branch              = branchList.getEditText();
+      #
+      #    xSysLastValue::saveLast(element);
+      #
+      #    dialog.updateServer();
+      #    if (gitExport.checkCloseDialog())
+      #    {
+      #        super();
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #getBranch
+      #public str getBranch()
+      #{
+      #    return branch;
+      #}
+    ENDSOURCE
+    SOURCE #getImportProjDef
+      #public NoYes getImportProjDef()
+      #{
+      #    return importProjDef;
+      #}
+    ENDSOURCE
+    SOURCE #getPath
+      #public str getPath()
+      #{
+      #    return repositoryPath;
+      #}
+    ENDSOURCE
+    SOURCE #init
+      #public void init()
+      #{
+      #;
+      #    if (!element.args().caller())
+      #        throw error("@SYS90597");
+      #
+      #    gitExport =  element.args().caller().runbase();
+      #
+      #    super();
+      #}
+    ENDSOURCE
+    SOURCE #initParmDefault
+      #/*MAN
+      #This method is called when no SysLastValue record can be found in xSysLastValue.GetLast()
+      #*/
+      #void initParmDefault()
+      #{
+      #
+      #}
+    ENDSOURCE
+    SOURCE #lastValueDataAreaId
+      #dataAreaId lastValueDataAreaId()
+      #{
+      #    return 'DAT';
+      #}
+    ENDSOURCE
+    SOURCE #lastValueDesignName
+      #private identifierName lastValueDesignName()
+      #{
+      #    return '';
+      #}
+    ENDSOURCE
+    SOURCE #lastValueElementName
+      #private identifierName lastValueElementName()
+      #{
+      #    return #identifierName();
+      #}
+    ENDSOURCE
+    SOURCE #lastValueType
+      #private UtilElementType lastValueType()
+      #{
+      #    return UtilElementType::Form;
+      #}
+    ENDSOURCE
+    SOURCE #lastValueUserId
+      #private userId lastValueUserId()
+      #{
+      #    return curuserid();
+      #}
+    ENDSOURCE
+    SOURCE #pack
+      #public container pack()
+      #{
+      #    lastPathsStr = con2Str(lastPaths);
+      #
+      #    return [#CurrentVersion,#CurrentList];
+      #}
+    ENDSOURCE
+    SOURCE #run
+      #public void run()
+      #{
+      #    xSysLastValue::getLast(element);
+      #
+      #    element.updateBox();
+      #
+      #    importProjDefControl.value(importProjDef);
+      #
+      #    element.updateBranchList();
+      #    branchList.selectText(branch);
+      #
+      #    super();
+      #}
+    ENDSOURCE
+    SOURCE #runBase
+      #RunBase runBase()
+      #{
+      #    return gitExport;
+      #}
+    ENDSOURCE
+    SOURCE #unpack
+      #public boolean unpack(container _packedClass)
+      #{
+      #
+      #    Integer     version     = conpeek(_packedClass,1);
+      #
+      #    switch (version)
+      #    {
+      #        case #CurrentVersion :
+      #            [version, #CurrentList] = _packedClass;
+      #
+      #            lastPaths = str2con(lastPathsStr);
+      #            break;
+      #        default :
+      #            return false;
+      #    }
+      #
+      #    return true;
+      #
+      #}
+    ENDSOURCE
+    SOURCE #updateBox
+      #void updateBox(FilePath _path = '', boolean _updateBox = true)
+      #{
+      #    int         i;
+      #
+      #    if (_path)
+      #    {
+      #        while (confind(lastPaths, _path))
+      #        {
+      #            lastPaths = condel(lastPaths, confind(lastPaths, _path), 1);
+      #        }
+      #
+      #        while (conlen(lastPaths) >= #pathsInHistory)
+      #        {
+      #            lastPaths = condel(lastPaths, #pathsInHistory, 1);
+      #        }
+      #        lastPaths = conins(lastPaths, 1, _path);
+      #    }
+      #
+      #    if (_updateBox)
+      #    {
+      #        filePath.clear();
+      #
+      #        for (i = 1; i <= conlen(lastPaths); i++)
+      #        {
+      #            if (i == 1)
+      #            {
+      #                repositoryPath = conpeek(lastPaths, i);
+      #            }
+      #
+      #            if (conpeek(lastPaths, i))
+      #            {
+      #                filePath.add(conpeek(lastPaths, i));
+      #            }
+      #        }
+      #
+      #        filePath.setDropSize(conlen(lastPaths));
+      #        filePath.selection(0);
+      #        filePath.update();
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #updateBranchList
+      #public void updateBranchList()
+      #{
+      #    container   branchesCon = Git::getBranches(repositoryPath);
+      #    int         i;
+      #
+      #    if (repositoryPath)
+      #    {
+      #        branchesCon = Git::getBranches(repositoryPath);
+      #    }
+      #
+      #    branchList.clear();
+      #
+      #    for (i = 1; i <= conlen(branchesCon); i++)
+      #    {
+      #        if (conpeek(branchesCon, i))
+      #        {
+      #            branchList.add(conpeek(branchesCon, i));
+      #        }
+      #    }
+      #
+      #    if (repositoryPath)
+      #    {
+      #        branchList.setEditText(Git::getCurrentBranch(repositoryPath));
+      #    }
+      #}
+    ENDSOURCE
+  ENDMETHODS
+  OBJECTBANK
+    PROPERTIES
+    ENDPROPERTIES
+    
+  ENDOBJECTBANK
+  
+  REFERENCEDATASOURCES
+  ENDREFERENCEDATASOURCES
+  
+  JOINS
+  ENDJOINS
+  
+  PARTREFERENCES
+  ENDPARTREFERENCES
+  
+  DESIGN
+    PROPERTIES
+      Width               #Column width
+      Caption             #Export to Git repository
+      WindowType          #Workspace
+      SaveSize            #No
+      SetCompany          #No
+      Style               #Dialog
+      ViewEditMode        #Edit
+    ENDPROPERTIES
+    
+    CONTAINER
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #BottomButtonGrp
+          Left                #Auto (right)
+          Top                 #Bottom edge
+          ElementPosition     #1431655764
+          ArrangeMethod       #Horizontal, flush right
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #DialogStartGrp
+          ElementPosition     #1073741822
+          HierarchyParent     #Dialog
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #ElementGrp
+          Width               #Column width
+          ElementPosition     #1503238552
+          HierarchyParent     #MainGrp
+          FrameType           #None
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #FileGrp
+          Width               #Column width
+          ElementPosition     #858993458
+          HierarchyParent     #MainGrp
+          FrameType           #None
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #GitOptionsGrp
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1610612734
+          HierarchyParent     #ElementGrp
+          FrameType           #Edged 3D
+          Caption             #Git options
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #MainGrp
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1431655764
+          HierarchyParent     #Main
+          Style               #DialogContent
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #OptionGrp
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1073741822
+          HierarchyParent     #ElementGrp
+          FrameType           #Edged 3D
+          Caption             #@SYS22622
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #RightButtonGrp
+          ElementPosition     #1610612733
+          HierarchyParent     #Dialog
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TAB
+        PROPERTIES
+          Name                #Tab
+          ElementPosition     #715827882
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #Dialog
+          ElementPosition     #1610612733
+          HierarchyParent     #Tab
+          Caption             #Query options
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #Main
+          ElementPosition     #1879048189
+          HierarchyParent     #Tab
+          Caption             #Git options
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #Browse
+          Left                #Right edge
+          HelpText            #@SYS74496
+          ElementPosition     #1610612733
+          HierarchyParent     #FileGrp
+          Text                #@SYS28927
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    Filename path;
+            #
+            #    super();
+            #
+            #    path = WinAPI::browseForPath(element.hWnd()); // simpler, faster, lower level call
+            #    //path = WinAPI::browseForFolderDialog(); // CLRInterop - nicer, but slower
+            #
+            #    element.updateBox(path);
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL CHECKBOX
+        PROPERTIES
+          Name                #CheckForDeletedControl
+          AutoDeclaration     #Yes
+          Enabled             #No
+          HelpText            #Check for objects that are present in repository, but missing in AOT and delete them from repository.
+          ElementPosition     #1610612733
+          HierarchyParent     #OptionGrp
+          Label               #Check for deleted objects
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL CHECKBOX
+        PROPERTIES
+          Name                #ImportProjDefControl
+          AutoDeclaration     #Yes
+          Enabled             #No
+          ElementPosition     #1073741822
+          HierarchyParent     #OptionGrp
+          Label               #Export project definition
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #BranchList
+          AutoDeclaration     #Yes
+          Width               #300
+          ElementPosition     #1431655764
+          HierarchyParent     #GitOptionsGrp
+          Label               #Branch
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #FilePath
+          AutoDeclaration     #Yes
+          Width               #Column width
+          AlignControl        #No
+          HelpText            #@SYS124357
+          ElementPosition     #1073741822
+          HierarchyParent     #FileGrp
+          DisplayLength       #50
+          Label               #Repository path
+          AppendNew           #Yes
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #modified
+            #public boolean modified()
+            #{
+            #    boolean ret;
+            #
+            #    ret = super();
+            #
+            #    repositoryPath = filePath.getEditText();
+            #
+            #    element.updateBranchList();
+            #
+            #    return ret;
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #Cancel
+          ElementPosition     #1610612733
+          HierarchyParent     #BottomButtonGrp
+          Command             #264
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #Export
+          ElementPosition     #1073741822
+          HierarchyParent     #BottomButtonGrp
+          Text                #@SYS5469
+          DefaultButton       #Yes
+          Command             #263
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+    ENDCONTAINER
+    
+  ENDDESIGN
+  
+  PERMISSIONS #Permissions
+    PROPERTIES
+    ENDPROPERTIES
+    
+    PERMISSIONSET #Read
+      PROPERTIES
+      ENDPROPERTIES
+      
+      FORM #Controls
+      ENDFORM
+      
+    TABLES #Tables
+    ENDTABLES
+    
+  SERVERMETHODS #Server Methods
+  ENDSERVERMETHODS
+  
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Update
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Create
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Delete
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+ENDPERMISSIONS
+
+ENDFORM
+
+
+***Element: END

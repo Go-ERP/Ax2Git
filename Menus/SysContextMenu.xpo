@@ -640,7 +640,7 @@ Formatversion: 1
       
       MENUITEM
         PROPERTIES
-          Name                #Export AOT selection
+          Name                #Export selected
           MenuItemType        #Action
           MenuItemName        #GitSysContextMenuExport
         ENDPROPERTIES
@@ -651,6 +651,15 @@ Formatversion: 1
           Name                #Export by query
           MenuItemType        #Action
           MenuItemName        #GitSysContextMenuExportQuery
+        ENDPROPERTIES
+        
+      ENDMENUITEM
+      SEPARATOR
+      MENUITEM
+        PROPERTIES
+          Name                #Import selected
+          MenuItemType        #Action
+          MenuItemName        #GitSysContextMenuImport
         ENDPROPERTIES
         
       ENDMENUITEM

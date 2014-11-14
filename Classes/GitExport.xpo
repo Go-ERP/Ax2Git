@@ -553,7 +553,7 @@ Formatversion: 1
         #}
       ENDSOURCE
       SOURCE #runProgram
-        # static str runProgram(
+        #static str runProgram(
         #    FileName    _program,
         #    str         _arguments,
         #    boolean     _runAsAdmin         = false,

@@ -74,11 +74,8 @@ Formatversion: 1
         #    int                                     exitCode;
         #    str                                     ret;
         #
-        #    if (WinAPI::fileExists(_repository + @'\.git\index.lock', false))
-        #    {
-        #        throw error('index.lock file exists - repository operation in progress?');
-        #    }
-        #
+        #if (WinAPI::fileExists(_repository + @'\.git\index.lock', false))
+        #throw error('index.lock exists - repository operation in progress');
         #    try
         #    {
         #        if (WinAPI::setCurrentDirectory(_repository) != 0)

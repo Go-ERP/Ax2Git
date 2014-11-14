@@ -45,6 +45,12 @@ Formatversion: 1
         NODETYPE 201
         NAME #GitExportDialog
       ENDNODE
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 11
+        NODETYPE 201
+        NAME #GitImportDialog
+      ENDNODE
       ENDGROUP
       
     GROUP #Classes
@@ -77,7 +83,19 @@ Formatversion: 1
         FILETYPE 0
         UTILTYPE 45
         NODETYPE 329
+        NAME #GitImport
+      ENDNODE
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 45
+        NODETYPE 329
         NAME #GitSysContextMenuExport
+      ENDNODE
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 45
+        NODETYPE 329
+        NAME #GitSysContextMenuImport
       ENDNODE
       ENDGROUP
       
@@ -108,6 +126,12 @@ Formatversion: 1
           UTILTYPE 3
           NODETYPE 296
           NAME #GitSysContextMenuExportQuery
+        ENDNODE
+        BEGINNODE
+          FILETYPE 0
+          UTILTYPE 3
+          NODETYPE 296
+          NAME #GitSysContextMenuImport
         ENDNODE
         ENDGROUP
         

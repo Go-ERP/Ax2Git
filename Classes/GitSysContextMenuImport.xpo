@@ -1,0 +1,79 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: CLS
+
+; 
+; --------------------------------------------------------------------------------
+  CLSVERSION 1
+  
+  CLASS #GitSysContextMenuImport
+    PROPERTIES
+      Name                #GitSysContextMenuImport
+      Extends             #SysContextMenu
+      RunOn               #Client
+      Origin              #{133D1BF9-53E8-4A96-9140-2BB257D5C253}
+    ENDPROPERTIES
+    
+    METHODS
+      SOURCE #classDeclaration
+        #/*
+        #    For calling export from context menu.
+        #*/
+        #class GitSysContextMenuImport extends SysContextMenu
+        #{
+        #    LastAotSelection    lastAotSelection;
+        #}
+      ENDSOURCE
+      SOURCE #first
+        #TreeNode first()
+        #{
+        #    return lastAotSelection.first();
+        #}
+      ENDSOURCE
+      SOURCE #new
+        #void new()
+        #{
+        #    lastAotSelection = new LastAotSelection();
+        #
+        #    super();
+        #}
+      ENDSOURCE
+      SOURCE #next
+        #TreeNode next()
+        #{
+        #    return lastAotSelection.next();
+        #}
+      ENDSOURCE
+      SOURCE #run
+        #void run(Args args)
+        #{
+        #    GitImport   gitImport = GitImport::construct(args.menuItemName());
+        #
+        #    gitImport.parmRootNode(lastAotSelection.first());
+        #
+        #    if (gitImport.prompt())
+        #    {
+        #        gitImport.run();
+        #    }
+        #}
+        #
+      ENDSOURCE
+      SOURCE #selectionCount
+        #int selectionCount()
+        #{
+        #    return lastAotSelection.selectionCount();
+        #}
+      ENDSOURCE
+      SOURCE #main
+        #static void main(Args args)
+        #{
+        #    GitSysContextMenuImport  import = new GitSysContextMenuImport();
+        #
+        #    import.run(args);
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDCLASS
+
+***Element: END
