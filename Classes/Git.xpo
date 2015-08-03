@@ -37,7 +37,7 @@ Formatversion: 1
         #    }
         #    else
         #    {
-        #        return Git::executeCommand(_repository, 'checkout -b ' + _branch);
+        #        return Git::executeCommand(_repository, strFmt('checkout -b %1 remotes/origin/%1 --',  _branch));
         #    }
         #}
       ENDSOURCE
