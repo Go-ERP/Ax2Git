@@ -67,11 +67,12 @@ Formatversion: 1
         #    #AotExport
         #    #AviFiles
         #
-        #    System.Diagnostics.Stopwatch stopWatch; //TODO: overall timer, avg. time per node
+        #    System.Diagnostics.Stopwatch stopWatch;
         #
         #    TreeNode                rootNode;
         #    FilePath                repoPath;
         #    NoYes                   synchronize;
+        #    NoYes                   checkCleaned;
         #    NoYes                   exportProjDef;
         #    GitExportLayers         exportLayers;
         #    UtilEntryLevel          parmLayer;
@@ -135,6 +136,12 @@ Formatversion: 1
         #SysFlushAOD::doFlush();
         #xSession::updateAOC();
         #*/
+        #
+        #        // Workaround for an export bug - flush dictionary
+        #        SysFlushDictionary::doFlush();
+        #        SysEvent::fireEvent(SysEventType::FlushDictionary);
+        #
+        #
         #        progress.setCount(layer+1, 1);
         #        progress.setText(strFmt('Processing layer: %1', enum2str(layer)), 1);
         #        progress.setCount(0, 2);
@@ -144,8 +151,8 @@ Formatversion: 1
         #
         #        Git::checkout(repoPath, enum2str(layer));
         #
-        #        //Merge-in changes from the layer below current
-        #        if (layer != 0)
+        #        // Merge-in changes from the layer just below current
+        #        if (layer > UtilEntryLevel::sys)
         #        {
         #            layerPrev = layer - 1;
         #
@@ -155,6 +162,7 @@ Formatversion: 1
         #            {
         #                foregroundHwnd = WinAPI::getForegroundWindow(); // save and then restore active window (progress)
         #
+        #                stopWatch.Stop();
         #                Git::resolveInteractive(repoPath);
         #                Git::mergeInteractive(repoPath);
         #
@@ -162,6 +170,7 @@ Formatversion: 1
         #                {
         #                    break;
         #                }
+        #                stopWatch.Start();
         #
         #                if (foregroundHwnd)
         #                {
@@ -189,12 +198,15 @@ Formatversion: 1
         #            foregroundHwnd = WinAPI::getForegroundWindow(); // save and then restore active window (progress)
         #
         #            progress.setText('Commit', 2);
+        #
+        #            stopWatch.Stop();
         #            Git::commitInteractive(repoPath, enum2str(layer));
         #
         #            if (Box::yesNo("Do you want to proceed to next layer?", DialogButton::Yes) != DialogButton::Yes)
         #            {
         #                return; //break;
         #            }
+        #            stopWatch.Start();
         #
         #            if (foregroundHwnd)
         #            {
@@ -214,46 +226,55 @@ Formatversion: 1
       SOURCE #exportMap
         #protected void exportMap(UtilEntryLevel _layer)
         #{
-        #    UtilEntryLevel  layer;
+        #    int             layer;
+        #    int             lowerLayer;
         #    TreeNode        treeNode;
         #    TreeNode        treeNodeInLayer;
         #    Set             layerSet;
         #    Counter         cnt;
+        #    SetEnumerator   setEnumerator;
         #
         #    nodeMapEnumerator.reset();
         #    while (nodeMapEnumerator.moveNext())
         #    {
         #        cnt++;
+        #        layer = -1;
         #
         #        treeNode = nodeMapEnumerator.currentKey();
         #        layerSet = nodeMapEnumerator.currentValue();
         #
+        #        progress.setCaption(strFmt('Exporting to %1', repoPath)); // Table sync tends to change dialog caption, so need to restore it
         #        progress.setCount(cnt, 2);
         #        progress.setText(treeNode.treeNodePath(), 2);
         #
-        #        if (synchronize)
-        #        {
-        #            // Force export of objects in every layer, despite if it is modified there or not
-        #            // Otherwise change would not be detected in Git in cases when you clear all customizations for node in some layer
-        #
-        #            // If node is not modified in the requested _layer,
-        #            // find any modified layer immediately below it
-        #            for (layer = _layer; layer >= -1; layer--) // -1 indicates that nothing was found
-        #            {
-        #                if (layerSet.in(layer))
-        #                    break;
-        #            }
-        #        }
-        #        else
+        #        if (layerSet.in(_layer)) // object exists in current layer
         #        {
         #            layer = _layer;
         #        }
-        #
-        #        if (layerSet.in(layer))
+        #        else if (checkCleaned && _layer > UtilEntryLevel::sys)
         #        {
+        #            // The object customization does not exist in current layer, but may have existed previously and deleted later at some point.
+        #            // We still need to export it's current representation in the layer to be able to capture the change.
+        #
+        #            // find first modified layer just below it
+        #            setEnumerator = layerSet.getEnumerator();
+        #            while (setEnumerator.moveNext())
+        #            {
+        #                if (setEnumerator.current() < _layer &&
+        #                    setEnumerator.current() > layer)
+        #                {
+        #                    layer = setEnumerator.current();
+        #                }
+        #            }
+        #        }
+        #
+        #        if (layer >= UtilEntryLevel::sys)
+        #        {
+        #            // TODO: Workaround for (cache?) bug
         #            treeNode.AOTrefresh();
         #            treeNode.AOTrestore();
         #            treeNode.AOTsave();
+        #            treeNode.treeNodeExport(WinAPI::getTempPath() + 'AxGitExport_tmp.xpo', #export);
         #
         #            treeNodeInLayer = treeNode.getNodeInLayer(layer);
         #            GitExport::exportNode(treeNodeInLayer, layer, exportLayers, repoPath);
@@ -324,15 +345,25 @@ Formatversion: 1
       SOURCE #run
         #void run()
         #{
+        #    int64       timeElapsed;
         #
         #    startLengthyOperation();
+        #    stopWatch.Start();
         #
         #    this.progressInit(strFmt('Exporting to %1', repoPath), 0, #AviUpdate, 2);
         #
+        #    // Workaround for an export bug - flush dictionary
+        #    SysFlushDictionary::doFlush();
+        #    SysEvent::fireEvent(SysEventType::FlushDictionary);
+        #
         #    progress.setText('Loading...', 1);
+        #    progress.setCount(1, 1);
+        #
+        #    //synchronize = true;
+        #    checkCleaned = true;
         #
         #    this.buildNodeMap(rootNode);
-        #    progress.setCount(1, 1);
+        #
         #    if (!nodeMap.elements())
         #    {
         #        return;
@@ -365,7 +396,9 @@ Formatversion: 1
         #        {
         #            if (commitInteractive)
         #            {
+        #                stopWatch.Stop();
         #                Git::commitInteractive(repoPath, commitMessage);
+        #                stopWatch.Start();
         #            }
         #            else
         #            {
@@ -378,6 +411,21 @@ Formatversion: 1
         #    rootNode = null;
         #
         #    endLengthyOperation();
+        #
+        #    stopWatch.Stop();
+        #    timeElapsed = CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds());
+        #    if (timeElapsed > 0 && timeElapsed <= 1000)
+        #    {
+        #        info(strFmt('Done in: %1 ms', timeElapsed));
+        #    }
+        #    else if (timeElapsed > 1000 && timeElapsed <= 1000*60)
+        #    {
+        #        info(strFmt('Done in: %1 seconds', timeElapsed div 1000));
+        #    }
+        #    else if (timeElapsed > 1000*60)
+        #    {
+        #        info(strFmt('Done in: %1 minutes', timeElapsed div (1000*60)));
+        #    }
         #}
       ENDSOURCE
       SOURCE #unpack
@@ -424,7 +472,12 @@ Formatversion: 1
         #    str     subPath;
         #    str     fullPath;
         #    int     lastSlashPos;
-        #//_treeNode.AOTsave();//TODO
+        #
+        #    if (!_treeNode)
+        #    {
+        #        throw error(funcName() + ' _treeNode parameter is null');
+        #    }
+        #
         #    if ((_exportLayers == GitExportLayers::SelectedLayer || _exportLayers == GitExportLayers::CurrentLayer) &&
         #        !_treeNode.getNodeInLayer(_layer, false))
         #    {
@@ -442,19 +495,16 @@ Formatversion: 1
         #    }
         #
         #    if (!GitExport::folderCheckCreate(_repoPath + subPath))
-        #        throw error('could not create path ' + _repoPath + subPath);
+        #        throw error('Could not create path ' + _repoPath + subPath);
         #
         #    fullPath = strFmt('%1%2\\%3.xpo', _repoPath, subPath, _treeNode.treeNodeName());
-        #//    if (exportLayers == GitExportLayers::SelectedLayer || exportLayers == GitExportLayers::CurrentLayer)
-        #//        info(strFmt("%1 (%2)", fullPath, exportLayer));
-        #//    else
-        #//        info(fullPath);
-        #
+        #    //if (_exportLayers == GitExportLayers::SelectedLayer || _exportLayers == GitExportLayers::CurrentLayer)
+        #        //info(strFmt("%1 (%2)", fullPath, _layer));
+        #    //else
+        #        //info(fullPath);
         #
         #    if (_treeNode.AOTObjectNode())
         #    {
-        #        //_treeNode.AOTrefresh();
-        #
         #        if (_exportLayers == GitExportLayers::SelectedLayer || _exportLayers == GitExportLayers::CurrentLayer)
         #            _treeNode.getNodeInLayer(_layer, false).treeNodeExport(fullPath, _exportFlag);
         #        else
@@ -462,8 +512,6 @@ Formatversion: 1
         #
         #        GitExport::postExport(_treeNode, fullPath);
         #    }
-        #
-        #    //_treeNode.treeNodeRelease();
         #}
         #
       ENDSOURCE
@@ -533,23 +581,39 @@ Formatversion: 1
         #    System.IO.StreamReader      streamReader;
         #    System.IO.StreamWriter      streamWriter;
         #    System.String               text;
+        #    System.Exception            ex;
         #
         #    System.Text.RegularExpressions.RegexOptions regexOptions;
         #
-        #    // Read XPO file
-        #    streamReader = new System.IO.StreamReader(_fullPath, encoding);
-        #    text          = streamReader.ReadToEnd();
-        #    streamReader.Close();
+        #    try
+        #    {
+        #        // Read XPO file
+        #        streamReader = new System.IO.StreamReader(_fullPath, encoding);
+        #        text          = streamReader.ReadToEnd();
+        #        streamReader.Close();
         #
-        #    // Comment line like this may trigger false changes in XPO files (e.g. when exporting with different language settings):
-        #    // "; Microsoft Dynamics AX Job: Job39 unloaded"
-        #    // Replace it with "; "
-        #    regexOptions = System.Text.RegularExpressions.RegexOptions::Multiline;
-        #    text = System.Text.RegularExpressions.Regex::Replace(text, '^; [A-Z].*$\n', '; \r\n', regexOptions);
+        #        // Comment line like this may trigger false changes in XPO files (e.g. when exporting with different language settings):
+        #        // "; Microsoft Dynamics AX Job: Job39 unloaded"
+        #        // Replace it with "; "
+        #        regexOptions = System.Text.RegularExpressions.RegexOptions::Multiline;
+        #        text = System.Text.RegularExpressions.Regex::Replace(text, '^; [A-Z].*$\n', '; \r\n', regexOptions);
         #
-        #    streamWriter = new System.IO.StreamWriter(_fullPath, false, encoding);
-        #    streamWriter.Write(text);
-        #    streamWriter.Close();
+        #        streamWriter = new System.IO.StreamWriter(_fullPath, false, encoding);
+        #        streamWriter.Write(text);
+        #        streamWriter.Close();
+        #    }
+        #    catch(Exception::CLRError)
+        #    {
+        #        // BP Deviation documented
+        #        ex = ClrInterop::getLastException();
+        #
+        #        while (ex != null)
+        #        {
+        #            error(ex.ToString());
+        #
+        #            ex = ex.get_InnerException();
+        #        }
+        #    }
         #}
       ENDSOURCE
       SOURCE #runProgram

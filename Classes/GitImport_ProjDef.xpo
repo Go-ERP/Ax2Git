@@ -1,0 +1,37 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: CLS
+
+; 
+; --------------------------------------------------------------------------------
+  CLSVERSION 1
+  
+  CLASS #GitImport_ProjDef
+    PROPERTIES
+      Name                #GitImport_ProjDef
+      Extends             #GitImport
+      Origin              #{4047381C-8220-49C6-BC2C-EFC485E229D4}
+    ENDPROPERTIES
+    
+    METHODS
+      SOURCE #classDeclaration
+        #class GitImport_ProjDef extends GitImport
+        #{
+        #}
+      ENDSOURCE
+      SOURCE #main
+        #public static void main(Args args)
+        #{
+        #    GitImport_ProjDef   import = new GitImport_ProjDef();
+        #
+        #    if (import.prompt())
+        #    {
+        #        import.run();
+        #    }
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDCLASS
+
+***Element: END

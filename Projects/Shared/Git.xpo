@@ -89,6 +89,12 @@ Formatversion: 1
         FILETYPE 0
         UTILTYPE 45
         NODETYPE 329
+        NAME #GitImport_ProjDef
+      ENDNODE
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 45
+        NODETYPE 329
         NAME #GitSysContextMenuExport
       ENDNODE
       BEGINNODE
@@ -133,6 +139,12 @@ Formatversion: 1
           NODETYPE 296
           NAME #GitSysContextMenuImport
         ENDNODE
+        BEGINNODE
+          FILETYPE 0
+          UTILTYPE 3
+          NODETYPE 296
+          NAME #GitImport_ProjDef
+        ENDNODE
         ENDGROUP
         
       ENDGROUP
@@ -161,6 +173,24 @@ Formatversion: 1
         PreventEditProperties #No
       ENDPROPERTIES
       
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 5
+        NODETYPE 215
+        NAME #IO_EnumerateFiles
+      ENDNODE
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 5
+        NODETYPE 215
+        NAME #IO_GetFiles
+      ENDNODE
+      BEGINNODE
+        FILETYPE 0
+        UTILTYPE 5
+        NODETYPE 215
+        NAME #ReadProjectDef
+      ENDNODE
       BEGINNODE
         FILETYPE 0
         UTILTYPE 5

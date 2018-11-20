@@ -18,7 +18,7 @@ Formatversion: 1
         #class Git
         #{
         #    #localmacro.git
-        #        @'C:\Program Files (x86)\Git\bin\git.exe'
+        #        @'C:\Program Files\Git\bin\git.exe'
         #    #endmacro
         #
         #    #localmacro.TortoiseGit
@@ -35,9 +35,13 @@ Formatversion: 1
         #    {
         #        return Git::executeCommand(_repository, 'checkout ' + _branch);
         #    }
+        #    else if (conFind(branches, 'remotes/origin/' + _branch))
+        #    {
+        #        return Git::executeCommand(_repository, strFmt('checkout -b %1 remotes/origin/%1 --',  _branch)); // checkout from remote
+        #    }
         #    else
         #    {
-        #        return Git::executeCommand(_repository, strFmt('checkout -b %1 remotes/origin/%1 --',  _branch));
+        #        return Git::executeCommand(_repository, 'checkout -b ' + _branch); // create new
         #    }
         #}
       ENDSOURCE
@@ -165,7 +169,7 @@ Formatversion: 1
         #        }
         #    }
         #
-        #    branchesStr = Git::executeCommand(_repository, 'branch');
+        #    branchesStr = Git::executeCommand(_repository, 'branch -a');
         #
         #    length = strLen(branchesStr);
         #    if (length)
@@ -272,7 +276,7 @@ Formatversion: 1
         #
         #    status =  Git::executeCommand(_repository, 'status');
         #
-        #    return strEndsWith(status, 'working directory clean\n');
+        #    return strEndsWith(status, 'clean\n');
         #}
       ENDSOURCE
       SOURCE #merge
@@ -280,7 +284,8 @@ Formatversion: 1
         #{
         #    str     ret;
         #
-        #    ret = Git::executeCommand(_repository, 'merge ' + _branch);
+        #    // Merge using 'theirs' strategy - changes from lower layer will prevail over current layer
+        #    ret = Git::executeCommand(_repository, 'merge -Xtheirs ' + _branch);
         #
         #    return ret;
         #}

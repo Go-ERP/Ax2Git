@@ -7,15 +7,14 @@ Formatversion: 1
 ; --------------------------------------------------------------------------------
   VERSION 1
   
-  MENUITEM #GitSysContextMenuExport
+  MENUITEM #GitImport_ProjDef
     Type: 3
     PROPERTIES
-      Name                #GitSysContextMenuExport
-      Label               #Export selection
+      Name                #GitImport_ProjDef
+      Label               #Import Project definition xpo
       ObjectType          #Class
-      Object              #GitSysContextMenuExport
-      Parameters          #Type=AOT
-      Origin              #{6AB921DF-AE99-4DBF-95E0-E928460F219B}
+      Object              #GitImport_ProjDef
+      Origin              #{22779681-752E-4E4D-BAEA-57CDA76F8889}
     ENDPROPERTIES
     
   ENDMENUITEM

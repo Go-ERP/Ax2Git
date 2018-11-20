@@ -21,6 +21,7 @@ FORM #GitImportDialog
       #
       #    GitExport               gitExport;
       #    FilePath                repositoryPath;
+      #    FileName                projectFileName;
       #    container               lastPaths;
       #    str                     lastPathsStr;
       #    NoYes                   importProjDef;
@@ -30,7 +31,7 @@ FORM #GitImportDialog
       #    #localmacro.CurrentList
       #        lastPathsStr,
       #        importProjDef,
-      #        branch
+      #        projectFileName
       #    #endmacro
       #
       #    #Define.pathsInHistory(5)
@@ -73,12 +74,17 @@ FORM #GitImportDialog
       #    return repositoryPath;
       #}
     ENDSOURCE
+    SOURCE #getProjectFileName
+      #public str getProjectFileName()
+      #{
+      #    return projectFileName;
+      #}
+    ENDSOURCE
     SOURCE #init
       #public void init()
       #{
-      #;
       #    if (!element.args().caller())
-      #        throw error("@SYS90597");
+      #        throw error(Error::wrongUseOfFunction(funcName()));
       #
       #    gitExport =  element.args().caller().runbase();
       #
@@ -142,7 +148,8 @@ FORM #GitImportDialog
       #    importProjDefControl.value(importProjDef);
       #
       #    element.updateBranchList();
-      #    branchList.selectText(branch);
+      #
+      #    ProjectFileNameControl.text(projectFileName);
       #
       #    super();
       #}
@@ -156,7 +163,6 @@ FORM #GitImportDialog
     SOURCE #unpack
       #public boolean unpack(container _packedClass)
       #{
-      #
       #    Integer     version     = conpeek(_packedClass,1);
       #
       #    switch (version)
@@ -171,7 +177,6 @@ FORM #GitImportDialog
       #    }
       #
       #    return true;
-      #
       #}
     ENDSOURCE
     SOURCE #updateBox
@@ -239,7 +244,9 @@ FORM #GitImportDialog
       #
       #    if (repositoryPath)
       #    {
-      #        branchList.setEditText(Git::getCurrentBranch(repositoryPath));
+      #        branch = Git::getCurrentBranch(repositoryPath);
+      #        branchList.setEditText(branch);
+      #        branchList.text(branch);
       #    }
       #}
     ENDSOURCE
@@ -367,6 +374,28 @@ FORM #GitImportDialog
       
       CONTROL GROUP
         PROPERTIES
+          Name                #ProjectDefFileGrp
+          AutoDeclaration     #Yes
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1879048190
+          HierarchyParent     #ElementGrp
+          FrameType           #Edged 3D
+          Caption             #Project definition
+          Columns             #2
+          ArrangeGuide        
+            ARRAY INDEX Columns 
+              #0
+              #0
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
           Name                #RightButtonGrp
           ElementPosition     #1610612733
           HierarchyParent     #Dialog
@@ -437,6 +466,35 @@ FORM #GitImportDialog
         ENDMETHODS
       ENDCONTROL 
       
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #BrowseProject
+          Left                #Right edge
+          ElementPosition     #1610612733
+          HierarchyParent     #ProjectDefFileGrp
+          Text                #@SYS28927
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    #file
+            #
+            #    super();
+            #
+            #    projectFileName = WinAPI::getOpenFileName(
+            #        element.hWnd(),
+            #        [WinAPI::fileType(#xpo), #allfilesName+#xpo],
+            #        repositoryPath+@'\Projects\Shared',
+            #        '');
+            #
+            #    projectFileNameControl.text(projectFileName);
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
       CONTROL CHECKBOX
         PROPERTIES
           Name                #CheckForDeletedControl
@@ -477,6 +535,18 @@ FORM #GitImportDialog
         ENDPROPERTIES
         
         METHODS
+          SOURCE #modified
+            #public boolean modified()
+            #{
+            #    boolean ret;
+            #
+            #    ret = super();
+            #
+            #    branch = BranchList.getEditText();
+            #
+            #    return ret;
+            #}
+          ENDSOURCE
         ENDMETHODS
       ENDCONTROL 
       
@@ -535,6 +605,32 @@ FORM #GitImportDialog
         ENDPROPERTIES
         
         METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #ProjectFileNameControl
+          AutoDeclaration     #Yes
+          Width               #Column width
+          ElementPosition     #1073741822
+          HierarchyParent     #ProjectDefFileGrp
+          Label               #Project definition xpo
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #modified
+            #public boolean modified()
+            #{
+            #    boolean ret;
+            #
+            #    ret = super();
+            #
+            #    projectFileName = ProjectFileNameControl.text();
+            #
+            #    return ret;
+            #}
+          ENDSOURCE
         ENDMETHODS
       ENDCONTROL 
       

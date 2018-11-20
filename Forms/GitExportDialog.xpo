@@ -130,9 +130,8 @@ FORM #GitExportDialog
     SOURCE #init
       #public void init()
       #{
-      #;
       #    if (!element.args().caller())
-      #        throw error("@SYS90597");
+      #        throw error(Error::wrongUseOfFunction(funcName()));
       #
       #    gitExport =  element.args().caller().runbase();
       #
@@ -205,7 +204,6 @@ FORM #GitExportDialog
       #    if (checkoutBranch)
       #    {
       #        element.updateBranchList();
-      #        branchList.selectText(branch);
       #    }
       #
       #    commitGrp.optionValue(commit);
@@ -309,7 +307,8 @@ FORM #GitExportDialog
       #
       #    if (repositoryPath)
       #    {
-      #        branchList.setEditText(Git::getCurrentBranch(repositoryPath));
+      #        branch = Git::getCurrentBranch(repositoryPath);
+      #        branchList.setEditText(branch);
       #    }
       #}
     ENDSOURCE
@@ -348,6 +347,17 @@ FORM #GitExportDialog
           Top                 #Bottom edge
           ElementPosition     #1431655764
           ArrangeMethod       #Horizontal, flush right
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #Checkout
+          ElementPosition     #715827880
+          HierarchyParent     #GitOptionsGrp
         ENDPROPERTIES
         
         METHODS
@@ -624,6 +634,18 @@ FORM #GitExportDialog
         ENDPROPERTIES
         
         METHODS
+          SOURCE #modified
+            #public boolean modified()
+            #{
+            #    boolean ret;
+            #
+            #    ret = super();
+            #
+            #    branch = BranchList.getEditText();
+            #
+            #    return ret;
+            #}
+          ENDSOURCE
         ENDMETHODS
       ENDCONTROL 
       

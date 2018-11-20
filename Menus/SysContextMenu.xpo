@@ -15,6 +15,29 @@ Formatversion: 1
       Origin              #{100E0000-0000-1000-FB09-5DBF82A26477}
     ENDPROPERTIES
     
+    MENU #GO-ERP Tools
+      PROPERTIES
+        Name                #GO
+        Label               #GO-ERP Tools
+      ENDPROPERTIES
+      
+      MENUITEM
+        PROPERTIES
+          Name                #MakeDefaultProject
+          MenuItemType        #Action
+          MenuItemName        #GODevToolsMakeDefaultProject
+        ENDPROPERTIES
+        
+      ENDMENUITEM
+      MENUITEM
+        PROPERTIES
+          Name                #Add element to default project
+          MenuItemType        #Action
+          MenuItemName        #GOPutElement2Project
+        ENDPROPERTIES
+        
+      ENDMENUITEM
+    ENDMENU
     MENUITEM
       PROPERTIES
         Name                #Compare existing code to proposed fix
@@ -639,6 +662,46 @@ Formatversion: 1
       ENDPROPERTIES
       
     ENDMENUITEM
+    MENU #Git
+      PROPERTIES
+        Name                #Git
+        Label               #Git
+      ENDPROPERTIES
+      
+      MENUITEM
+        PROPERTIES
+          Name                #Export selection
+          MenuItemType        #Action
+          MenuItemName        #GitSysContextMenuExport
+        ENDPROPERTIES
+        
+      ENDMENUITEM
+      MENUITEM
+        PROPERTIES
+          Name                #Export by query
+          MenuItemType        #Action
+          MenuItemName        #GitSysContextMenuExportQuery
+        ENDPROPERTIES
+        
+      ENDMENUITEM
+      SEPARATOR
+      MENUITEM
+        PROPERTIES
+          Name                #Import selected
+          MenuItemType        #Action
+          MenuItemName        #GitSysContextMenuImport
+        ENDPROPERTIES
+        
+      ENDMENUITEM
+      MENUITEM
+        PROPERTIES
+          Name                #Import Project definition xpo
+          MenuItemType        #Action
+          MenuItemName        #GitImport_ProjDef
+        ENDPROPERTIES
+        
+      ENDMENUITEM
+    ENDMENU
   ENDMENU
   
 
