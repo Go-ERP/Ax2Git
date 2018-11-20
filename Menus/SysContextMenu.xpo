@@ -90,7 +90,7 @@ Formatversion: 1
     SEPARATOR
     MENU #@SYS24666
       PROPERTIES
-        Name                #@SYS24666
+        Name                #MenuxRef
         Label               #@SYS24666
       ENDPROPERTIES
       
@@ -271,7 +271,7 @@ Formatversion: 1
     ENDMENUITEM
     MENU #@SYS16245
       PROPERTIES
-        Name                #@SYS16245
+        Name                #MenuCopy
         Label               #@SYS16245
         NeededAccessLevel   #NoAccess
       ENDPROPERTIES
@@ -354,6 +354,13 @@ Formatversion: 1
       ENDPROPERTIES
       
     ENDMENUITEM
+    MENUITEM
+      PROPERTIES
+        Name                #Lookup in Issue Search
+        MenuItemName        #SysLcsIssueSearchAotItem
+      ENDPROPERTIES
+      
+    ENDMENUITEM
     SEPARATOR
     MENU #@SYS53405
       PROPERTIES
@@ -388,7 +395,7 @@ Formatversion: 1
       ENDMENUITEM
       MENU #@SYS57839
         PROPERTIES
-          Name                #@SYS57839
+          Name                #MenuOpenOldLayer
           Label               #@SYS57839
           NeededAccessLevel   #NoAccess
         ENDPROPERTIES
@@ -632,38 +639,6 @@ Formatversion: 1
       ENDPROPERTIES
       
     ENDMENUITEM
-    MENU #Git
-      PROPERTIES
-        Name                #Git
-        Label               #Git
-      ENDPROPERTIES
-      
-      MENUITEM
-        PROPERTIES
-          Name                #Export selected
-          MenuItemType        #Action
-          MenuItemName        #GitSysContextMenuExport
-        ENDPROPERTIES
-        
-      ENDMENUITEM
-      MENUITEM
-        PROPERTIES
-          Name                #Export by query
-          MenuItemType        #Action
-          MenuItemName        #GitSysContextMenuExportQuery
-        ENDPROPERTIES
-        
-      ENDMENUITEM
-      SEPARATOR
-      MENUITEM
-        PROPERTIES
-          Name                #Import selected
-          MenuItemType        #Action
-          MenuItemName        #GitSysContextMenuImport
-        ENDPROPERTIES
-        
-      ENDMENUITEM
-    ENDMENU
   ENDMENU
   
 
