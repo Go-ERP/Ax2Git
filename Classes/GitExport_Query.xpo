@@ -24,15 +24,18 @@ Formatversion: 1
         #    Set                     elementIdSet = new Set(Types::Int64);
         #    Set                     layerSet;
         #
-        #stopWatch.Reset();
-        #stopWatch.Start();
+        #    stopWatch.Reset();
+        #    stopWatch.Start();
+        #
         #    while (queryRun.next())
         #    {
         #        if (queryRun.changed(tableNum(SysModelElement)))
         #        {
         #            sysModelElement = queryRun.get(tableNum(SysModelElement), 1) as SysModelElement;
         #            if (sysModelElement.RootModelElement != sysModelElement.RecId || sysModelElement.ParentId)
+        #            {
         #                continue;
+        #            }
         #
         #        //}
         #        //if (queryRun.changed(tableNum(SysModelElement)))
@@ -61,11 +64,10 @@ Formatversion: 1
         #                treeNode.treeNodeRelease();
         #                treeNode = null;
         #            }
-        #            else
-        #            {
+        #            //else
+        #            //{
         #                //breakpoint;
-        #            }
-        #
+        #            //}
         #        }
         #    }
         #
@@ -73,10 +75,6 @@ Formatversion: 1
         #    progress.setCount(0, 2);
         #
         #    nodeMapEnumerator = nodeMap.getEnumerator();
-        #
-        #//stopWatch.Stop();
-        #//info(strFmt('Query run Elapsed time: %1', CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds())));
-        #
         #}
       ENDSOURCE
       SOURCE #buildQuery_x
@@ -175,9 +173,8 @@ Formatversion: 1
         #public void dialogPostRun(DialogRunbase dialog)
         #{
         #    Object  formRun;
-        #    ;
         #
-        #    if(FormHasMethod(dialog.formRun(),"setQueryRanges"))
+        #    if (FormHasMethod(dialog.formRun(), "setQueryRanges"))
         #    {
         #        formRun = dialog.formRun();
         #        formRun.setQueryRanges();
@@ -335,7 +332,8 @@ Formatversion: 1
         #
         #    progress.setText('Loading...', 1);
         #    this.buildNodeMap(null);
-        #info(strFmt('Nodes: %1', nodeMap.elements()));
+        #
+        #    info(strFmt('Nodes: %1', nodeMap.elements()));
         #
         #    this.exportAllLayers();
         #

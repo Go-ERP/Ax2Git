@@ -18,11 +18,11 @@ Formatversion: 1
         #class Git
         #{
         #    #localmacro.git
-        #        @'C:\Program Files\Git\bin\git.exe'
+        #        'git.exe'
         #    #endmacro
         #
         #    #localmacro.TortoiseGit
-        #        @'C:\Program Files\TortoiseGit\bin\TortoiseGitProc.exe'
+        #        'TortoiseGitProc.exe'
         #    #endmacro
         #}
       ENDSOURCE
@@ -49,6 +49,7 @@ Formatversion: 1
         #public static str commit(str _repository, str _message)
         #{
         #    Git::executeCommand(_repository, 'add .');
+        #
         #    return Git::executeCommand(_repository, strFmt('commit -a -m "%1"', _message));
         #}
       ENDSOURCE
@@ -63,7 +64,8 @@ Formatversion: 1
         #        _repository,
         #        #ShellExeOpen,
         #        #SW_SHOWNORMAL,
-        #        true);
+        #        true
+        #    );
         #}
       ENDSOURCE
       SOURCE #executeCommand
@@ -78,8 +80,12 @@ Formatversion: 1
         #    int                                     exitCode;
         #    str                                     ret;
         #
-        #if (WinAPI::fileExists(_repository + @'\.git\index.lock', false))
-        #throw error('index.lock exists - repository operation in progress');
+        #
+        #    if (WinAPI::fileExists(_repository + @'\.git\index.lock', false))
+        #    {
+        #        throw error('index.lock exists - repository operation in progress');
+        #    }
+        #
         #    try
         #    {
         #        if (WinAPI::setCurrentDirectory(_repository) != 0)
@@ -160,10 +166,13 @@ Formatversion: 1
         #    void add2con(str _line)
         #    {
         #        _line = strLRTrim(_line);
+        #
         #        if (_line)
         #        {
         #            if (!_withCurrentBranchMark && subStr(_line, 1, 2) == '* ')
+        #            {
         #                _line = subStr(_line, 3, strLen(_line));                  // remove current branch marker
+        #            }
         #
         #            branchesCon += _line;
         #        }
@@ -172,9 +181,11 @@ Formatversion: 1
         #    branchesStr = Git::executeCommand(_repository, 'branch -a');
         #
         #    length = strLen(branchesStr);
+        #
         #    if (length)
         #    {
         #        j = strScan(branchesStr, #separator, 1, length);
+        #
         #        while (j)
         #        {
         #            line = (subStr(branchesStr, i, j-i));
@@ -196,11 +207,15 @@ Formatversion: 1
         #    int         i;
         #
         #    branchesCon = Git::getBranches(_repository, true);
+        #
         #    for (i = 1; i <= conLen(branchesCon); i++)
         #    {
         #        branch = conPeek(branchesCon, i);
+        #
         #        if (subStr(branch, 1, 2) == '* ')
+        #        {
         #            return subStr(branch, 3, strLen(branch));
+        #        }
         #    }
         #
         #    return '';
@@ -232,7 +247,10 @@ Formatversion: 1
         #    parmStr  = 'log';
         #    parmStr += strFmt(' -n %1', _lines);
         #    parmStr += ' --name-status';
-        #    if (_file) parmStr += ' --follow';
+        #    if (_file)
+        #    {
+        #        parmStr += ' --follow';
+        #    }
         #    parmStr += ' --no-merges';
         #    parmStr += ' --date=iso';
         #    parmStr += strFmt(' --pretty=format:"\%h%1\%s"', #FieldSeparator);
@@ -301,7 +319,8 @@ Formatversion: 1
         #        _repository,
         #        #ShellExeOpen,
         #        #SW_SHOWNORMAL,
-        #        true);
+        #        true
+        #    );
         #}
       ENDSOURCE
       SOURCE #resolveInteractive
@@ -315,7 +334,8 @@ Formatversion: 1
         #        _repository,
         #        #ShellExeOpen,
         #        #SW_SHOWNORMAL,
-        #        true);
+        #        true
+        #    );
         #}
       ENDSOURCE
     ENDMETHODS

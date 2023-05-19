@@ -21,7 +21,7 @@ Formatversion: 1
         #    TreeNodeIterator    treeNodeIterator;
         #    TreeNode            childNode;
         #
-        #    if (GitExport::nodeIsExportable(_treeNode, GitExportLayers::TopLayer))
+        #    if (GitExport::nodeIsExportable(_treeNode, GitExportLayers::Top))
         #    {
         #        nodeSet.add(_treeNode);
         #    }
@@ -119,8 +119,8 @@ Formatversion: 1
         #{
         #    boolean ret;
         #
-        #    repoPath            = dialogFormRun.getPath();
-        #    branch              = dialogFormRun.getBranch();
+        #    repoPath = dialogFormRun.getPath();
+        #    branch   = dialogFormRun.getBranch();
         #
         #    ret = super();
         #
@@ -172,7 +172,8 @@ Formatversion: 1
         #
         #    GitExport::runProgram(
         #        #CombineXPOs,
-        #        strFmt('-utf8 -XpoDir "%1" -SpecifiedXpoFile "%2" -CombinedXpoFile "%3"', repoPath, listFileName, combinedFileName));
+        #        strFmt('-utf8 -XpoDir "%1" -SpecifiedXpoFile "%2" -CombinedXpoFile "%3"', repoPath, listFileName, combinedFileName)
+        #    );
         #
         #    WinAPI::deleteFile(listFileName);
         #
@@ -246,7 +247,7 @@ Formatversion: 1
         #public boolean unpack(container packedClass)
         #{
         #    Version version = RunBase::getVersion(packedClass);
-        #;
+        #
         #    switch (version)
         #    {
         #        case #CurrentVersion:

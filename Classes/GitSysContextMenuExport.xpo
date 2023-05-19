@@ -34,8 +34,8 @@ Formatversion: 1
       SOURCE #new
         #void new()
         #{
-        #    ;
         #    lastAotSelection = new LastAotSelection();
+        #
         #    super();
         #}
       ENDSOURCE

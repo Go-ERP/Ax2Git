@@ -131,7 +131,9 @@ FORM #GitExportDialog
       #public void init()
       #{
       #    if (!element.args().caller())
+      #    {
       #        throw error(Error::wrongUseOfFunction(funcName()));
+      #    }
       #
       #    gitExport =  element.args().caller().runbase();
       #
@@ -197,7 +199,7 @@ FORM #GitExportDialog
       #    exportLayersControl.selection(exportLayers);
       #
       #    layerControl.selection(layer);
-      #    layerControl.enabled(exportLayers == GitExportLayers::SelectedLayer);
+      #    layerControl.enabled(exportLayers == GitExportLayers::Selected);
       #
       #    checkoutBranchGrp.optionValue(checkoutBranch);
       #
@@ -224,7 +226,6 @@ FORM #GitExportDialog
     SOURCE #unpack
       #public boolean unpack(container _packedClass)
       #{
-      #
       #    Integer     version     = conpeek(_packedClass,1);
       #
       #    switch (version)
@@ -666,7 +667,7 @@ FORM #GitExportDialog
             #
             #    ret = super();
             #
-            #    layerControl.enabled(exportLayersControl.selection() == GitExportLayers::SelectedLayer);
+            #    layerControl.enabled(exportLayersControl.selection() == GitExportLayers::Selected);
             #
             #    return ret;
             #}

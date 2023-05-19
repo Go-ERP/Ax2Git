@@ -16,31 +16,31 @@ Formatversion: 1
     ENDPROPERTIES
     
     TYPEELEMENTS
-      #TopLayer
+      #All
       PROPERTIES
-        Name                #TopLayer
-        Label               #Top layer
+        Name                #All
+        Label               #All
         EnumValue           #0
       ENDPROPERTIES
       
-      #CurrentLayer
+      #Current
       PROPERTIES
-        Name                #CurrentLayer
-        Label               #Current layer
+        Name                #Current
+        Label               #Current
         EnumValue           #1
       ENDPROPERTIES
       
-      #SelectedLayer
+      #Selected
       PROPERTIES
-        Name                #SelectedLayer
-        Label               #Selected layer
+        Name                #Selected
+        Label               #Selected
         EnumValue           #2
       ENDPROPERTIES
       
-      #AllLayers
+      #Top
       PROPERTIES
-        Name                #AllLayers
-        Label               #Track all layers
+        Name                #Top
+        Label               #Top
         EnumValue           #3
       ENDPROPERTIES
       

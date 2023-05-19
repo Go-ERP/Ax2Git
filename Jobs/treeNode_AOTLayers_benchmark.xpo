@@ -43,7 +43,7 @@ Formatversion: 1
     #        info(strFmt('%1', layer));
     #    }
     #    stopWatch.Stop();
-    #    info(strFmt('Elapsed time: %1', CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds())));
+    #    info(strFmt('Time elapsed: %1', Esn::ms2HMSms(CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds()))));
     #
     #    info('-------------------------------------');
     #    info('treeNode.getNodeInLayer():');
@@ -60,7 +60,7 @@ Formatversion: 1
     #        }
     #    }
     #    stopWatch.Stop();
-    #    info(strFmt('Elapsed time: %1', CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds())));
+    #    info(strFmt('Time elapsed: %1', Esn::ms2HMSms(CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds()))));
     #
     #    info('-------------------------------------');
     #    info('sysModelElement 2 queries:');
@@ -102,7 +102,7 @@ Formatversion: 1
     #        info(strFmt('%1', sysModelLayer.Layer));
     #    }
     #    stopWatch.Stop();
-    #    info(strFmt('Elapsed time: %1', CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds())));
+    #    info(strFmt('Time elapsed: %1', Esn::ms2HMSms(CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds()))));
     #
     #
     #    info('-------------------------------------');
@@ -132,7 +132,7 @@ Formatversion: 1
     #        info(strFmt('%1', sysModelLayer.Layer));
     #    }
     #    stopWatch.Stop();
-    #    info(strFmt('Elapsed time: %1', CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds())));
+    #    info(strFmt('Time elapsed: %1', Esn::ms2HMSms(CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds()))));
     #
     #    info('-------------------------------------');
     #    info('sysModelElement again 2 queries:');
@@ -162,8 +162,7 @@ Formatversion: 1
     #        info(strFmt('%1', sysModelLayer.Layer));
     #    }
     #    stopWatch.Stop();
-    #    info(strFmt('Elapsed time: %1', CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds())));
-    #
+    #    info(strFmt('Time elapsed: %1', Esn::ms2HMSms(CLRInterop::getAnyTypeForObject(stopWatch.get_ElapsedMilliseconds()))));
     #}
   ENDSOURCE
   PROPERTIES

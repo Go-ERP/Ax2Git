@@ -23,20 +23,60 @@ Formatversion: 1
       
       MENUITEM
         PROPERTIES
-          Name                #MakeDefaultProject
-          MenuItemType        #Action
-          MenuItemName        #GODevToolsMakeDefaultProject
-        ENDPROPERTIES
-        
-      ENDMENUITEM
-      MENUITEM
-        PROPERTIES
-          Name                #Add element to default project
+          Name                #Add element to startup project
           MenuItemType        #Action
           MenuItemName        #GOPutElement2Project
         ENDPROPERTIES
         
       ENDMENUITEM
+      MENUITEM
+        PROPERTIES
+          Name                #Set as startup project
+          MenuItemType        #Action
+          MenuItemName        #GODevToolsMakeDefaultProject
+        ENDPROPERTIES
+        
+      ENDMENUITEM
+      MENU #Git
+        PROPERTIES
+          Name                #Git
+          Label               #Git
+        ENDPROPERTIES
+        
+        MENUITEM
+          PROPERTIES
+            Name                #Export selection
+            MenuItemType        #Action
+            MenuItemName        #GitSysContextMenuExport
+          ENDPROPERTIES
+          
+        ENDMENUITEM
+        MENUITEM
+          PROPERTIES
+            Name                #Export by query
+            MenuItemType        #Action
+            MenuItemName        #GitSysContextMenuExportQuery
+          ENDPROPERTIES
+          
+        ENDMENUITEM
+        SEPARATOR
+        MENUITEM
+          PROPERTIES
+            Name                #Import selected
+            MenuItemType        #Action
+            MenuItemName        #GitSysContextMenuImport
+          ENDPROPERTIES
+          
+        ENDMENUITEM
+        MENUITEM
+          PROPERTIES
+            Name                #Import Project definition xpo
+            MenuItemType        #Action
+            MenuItemName        #GitImport_ProjDef
+          ENDPROPERTIES
+          
+        ENDMENUITEM
+      ENDMENU
     ENDMENU
     MENUITEM
       PROPERTIES
@@ -662,46 +702,6 @@ Formatversion: 1
       ENDPROPERTIES
       
     ENDMENUITEM
-    MENU #Git
-      PROPERTIES
-        Name                #Git
-        Label               #Git
-      ENDPROPERTIES
-      
-      MENUITEM
-        PROPERTIES
-          Name                #Export selection
-          MenuItemType        #Action
-          MenuItemName        #GitSysContextMenuExport
-        ENDPROPERTIES
-        
-      ENDMENUITEM
-      MENUITEM
-        PROPERTIES
-          Name                #Export by query
-          MenuItemType        #Action
-          MenuItemName        #GitSysContextMenuExportQuery
-        ENDPROPERTIES
-        
-      ENDMENUITEM
-      SEPARATOR
-      MENUITEM
-        PROPERTIES
-          Name                #Import selected
-          MenuItemType        #Action
-          MenuItemName        #GitSysContextMenuImport
-        ENDPROPERTIES
-        
-      ENDMENUITEM
-      MENUITEM
-        PROPERTIES
-          Name                #Import Project definition xpo
-          MenuItemType        #Action
-          MenuItemName        #GitImport_ProjDef
-        ENDPROPERTIES
-        
-      ENDMENUITEM
-    ENDMENU
   ENDMENU
   
 

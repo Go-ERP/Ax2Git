@@ -84,7 +84,9 @@ FORM #GitImportDialog
       #public void init()
       #{
       #    if (!element.args().caller())
+      #    {
       #        throw error(Error::wrongUseOfFunction(funcName()));
+      #    }
       #
       #    gitExport =  element.args().caller().runbase();
       #
@@ -487,7 +489,8 @@ FORM #GitImportDialog
             #        element.hWnd(),
             #        [WinAPI::fileType(#xpo), #allfilesName+#xpo],
             #        repositoryPath+@'\Projects\Shared',
-            #        '');
+            #        ''
+            #    );
             #
             #    projectFileNameControl.text(projectFileName);
             #}
